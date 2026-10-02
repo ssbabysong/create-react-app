@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { today, uid } from '../store.js';
-import { FreshBar, OriginBadge, Stars } from './BeanCard.jsx';
+import { FreshBar, OriginBadge, Stars, bagColor } from './BeanCard.jsx';
+import { BeanBag, IconCup, IconDrip } from './Illustrations.jsx';
 
 const fmt = (iso) => {
   const d = new Date(iso);
@@ -42,7 +43,11 @@ export default function BeanDetail({ bean, onClose, onEdit, onDelete, onUse, onS
         <button className="btn btn-ghost" onClick={onEdit}>编辑</button>
       </header>
 
-      {bean.photo && <img className="detail-photo" src={bean.photo} alt="豆袋照片" />}
+      {bean.photo ? (
+        <img className="detail-photo" src={bean.photo} alt="豆袋照片" />
+      ) : (
+        <div className="detail-cover"><BeanBag color={bagColor(bean)} /></div>
+      )}
       <h1 className="detail-title">{bean.name}</h1>
       <div className="row gap-s wrap">
         <OriginBadge country={bean.country} />
@@ -71,15 +76,15 @@ export default function BeanDetail({ bean, onClose, onEdit, onDelete, onUse, onS
           <div className="row gap-s">
             <input type="number" inputMode="decimal" min="0" value={grams} onChange={(e) => setGrams(e.target.value)} />
             <span>g</span>
-            <button className="btn btn-soft" onClick={() => onUse(bean.id, Number(grams) || 0, '手冲')}>💧 手冲</button>
-            <button className="btn btn-soft" onClick={() => onUse(bean.id, Number(grams) || 0, '意式')}>☕ 意式</button>
+            <button className="btn btn-soft" onClick={() => onUse(bean.id, Number(grams) || 0, '手冲')}><IconDrip /> 手冲</button>
+            <button className="btn btn-soft" onClick={() => onUse(bean.id, Number(grams) || 0, '意式')}><IconCup /> 意式</button>
           </div>
           <button className="btn btn-ghost small" onClick={() => onSave({ ...bean, remaining: 0, finished: true })}>
             标记为已喝完
           </button>
         </div>
       ) : (
-        <button className="btn btn-primary block" onClick={rebuy}>🔁 回购一包（新烘焙日）</button>
+        <button className="btn btn-primary block" onClick={rebuy}>回购一包（新烘焙日）</button>
       )}
 
       {bean.log?.length > 0 && (

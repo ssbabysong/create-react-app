@@ -3,6 +3,7 @@ import {
   ACHIEVEMENTS, BLEND, CONTINENTS, FLAVORS, ORIGINS, PROCESSES, VARIETIES,
 } from '../data.js';
 import { downloadJSON, today } from '../store.js';
+import { CoffeeBranch } from './Illustrations.jsx';
 
 function countBy(beans, key) {
   const m = new Map();
@@ -30,7 +31,7 @@ function Dex({ title, items, counts }) {
   return (
     <section className="card">
       <div className="row between">
-        <h3>{title}</h3>
+        <h3><span className="mark">{title}</span></h3>
         <Progress have={have} total={all.length} />
       </div>
       <div className="chips">
@@ -77,6 +78,7 @@ export default function Collection({ beans, setBeans, doses, setDoses }) {
 
   return (
     <>
+      <div className="dex-hero"><CoffeeBranch /></div>
       <section className="stats card">
         <div><b>{beans.length}</b><span>累计收藏</span></div>
         <div><b>{knownCountries}</b><span>产地</span></div>
@@ -86,7 +88,7 @@ export default function Collection({ beans, setBeans, doses, setDoses }) {
 
       <section className="card">
         <div className="row between">
-          <h3>🌍 产地图鉴</h3>
+          <h3><span className="mark">产地图鉴</span></h3>
           <Progress have={knownCountries} total={ORIGINS.length} />
         </div>
         {CONTINENTS.map((ct) => (
@@ -97,7 +99,7 @@ export default function Collection({ beans, setBeans, doses, setDoses }) {
                 const n = countries.get(o.name) || 0;
                 return (
                   <div key={o.name} className={`origin-cell ${n ? 'on' : 'locked'}`} title={o.name}>
-                    <span className="flag">{o.flag}</span>
+                    <span className="flag emoji">{o.flag}</span>
                     <span className="name">{o.name}</span>
                     {n > 0 && <em>{n}</em>}
                   </div>
@@ -106,16 +108,16 @@ export default function Collection({ beans, setBeans, doses, setDoses }) {
             </div>
           </div>
         ))}
-        {countries.has(BLEND) && <p className="muted small">另有 {countries.get(BLEND)} 支拼配豆 🫘</p>}
+        {countries.has(BLEND) && <p className="muted small">另有 {countries.get(BLEND)} 支拼配豆</p>}
       </section>
 
-      <Dex title="🧪 处理法" items={PROCESSES} counts={countBy(beans, 'process')} />
-      <Dex title="🌱 品种" items={VARIETIES} counts={countBy(beans, 'variety')} />
-      <Dex title="👅 风味" items={FLAVORS} counts={countBy(beans, 'flavors')} />
+      <Dex title="处理法" items={PROCESSES} counts={countBy(beans, 'process')} />
+      <Dex title="品种" items={VARIETIES} counts={countBy(beans, 'variety')} />
+      <Dex title="风味" items={FLAVORS} counts={countBy(beans, 'flavors')} />
 
       <section className="card">
         <div className="row between">
-          <h3>🏅 成就</h3>
+          <h3><span className="mark">成就印章</span></h3>
           <Progress have={unlocked.length} total={ACHIEVEMENTS.length} />
         </div>
         <div className="badges">
@@ -123,7 +125,7 @@ export default function Collection({ beans, setBeans, doses, setDoses }) {
             const on = unlocked.includes(a);
             return (
               <div key={a.id} className={`badge ${on ? 'on' : 'locked'}`}>
-                <span className="badge-icon">{on ? a.icon : '🔒'}</span>
+                <span className="badge-icon emoji">{a.icon}</span>
                 <b>{a.title}</b>
                 <span className="small muted">{a.desc}</span>
               </div>
@@ -133,7 +135,7 @@ export default function Collection({ beans, setBeans, doses, setDoses }) {
       </section>
 
       <section className="card">
-        <h3>⚙️ 设置与备份</h3>
+        <h3><span className="mark">设置与备份</span></h3>
         <div className="grid-2">
           {Object.keys(doses).map((m) => (
             <label key={m} className="field">
@@ -151,9 +153,9 @@ export default function Collection({ beans, setBeans, doses, setDoses }) {
         <p className="muted small">数据只保存在这台设备的浏览器里，换手机或清缓存前记得导出备份。</p>
         <div className="row gap-s wrap">
           <button className="btn btn-soft" onClick={() => downloadJSON({ beans, doses }, `豆仓备份-${today()}.json`)}>
-            ⬇️ 导出备份
+            导出备份
           </button>
-          <button className="btn btn-soft" onClick={() => fileRef.current.click()}>⬆️ 导入备份</button>
+          <button className="btn btn-soft" onClick={() => fileRef.current.click()}>导入备份</button>
           <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={importFile} />
         </div>
         {msg && <p className="small">{msg}</p>}

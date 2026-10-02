@@ -1,12 +1,21 @@
 import { originOf, BLEND } from '../data.js';
 import { freshness } from '../store.js';
+import { BAG_COLORS, BeanBag, IconCup, IconDrip } from './Illustrations.jsx';
+
+// 同一产地的豆袋颜色固定，方便一眼认出
+export function bagColor(bean) {
+  const key = bean.country || bean.name || '';
+  let h = 0;
+  for (const ch of key) h = (h * 31 + ch.codePointAt(0)) >>> 0;
+  return BAG_COLORS[h % BAG_COLORS.length];
+}
 
 export function OriginBadge({ country }) {
   if (!country) return null;
   const flag = country === BLEND ? '🫘' : originOf(country)?.flag || '📍';
   return (
     <span className="origin">
-      {flag} {country}
+      <span className="emoji">{flag}</span> {country}
     </span>
   );
 }
@@ -50,7 +59,7 @@ export default function BeanCard({ bean, doses, onOpen, onUse }) {
     <article className={`card bean-card ${bean.finished ? 'is-finished' : ''}`}>
       <button className="bean-main" onClick={onOpen}>
         <div className="thumb">
-          {bean.photo ? <img src={bean.photo} alt="" /> : <span>{originOf(bean.country)?.flag || '🫘'}</span>}
+          {bean.photo ? <img src={bean.photo} alt="" /> : <BeanBag color={bagColor(bean)} />}
         </div>
         <div className="bean-info">
           <h3>{bean.name}</h3>
@@ -80,7 +89,7 @@ export default function BeanCard({ bean, doses, onOpen, onUse }) {
         <div className="row gap-s">
           {methods.map((m) => (
             <button key={m} className="btn btn-soft grow" onClick={() => onUse(bean.id, doses[m], m)}>
-              {m === '意式' ? '☕' : '💧'} {m} −{doses[m]}g
+              {m === '意式' ? <IconCup /> : <IconDrip />} {m} −{doses[m]}g
             </button>
           ))}
         </div>

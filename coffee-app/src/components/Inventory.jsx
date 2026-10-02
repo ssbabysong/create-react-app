@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { freshness } from '../store.js';
 import BeanCard from './BeanCard.jsx';
+import { LatteCup, PourOver } from './Illustrations.jsx';
 
 const FILTERS = [
   { key: 'stock', label: '在仓' },
@@ -50,8 +51,8 @@ export default function Inventory({ beans, doses, onOpen, onUse, onAdd, onSample
   if (beans.length === 0) {
     return (
       <div className="empty">
-        <div className="empty-art">🫘</div>
-        <h2>豆仓还是空的</h2>
+        <PourOver />
+        <h2><span className="mark">豆仓还是空的</span></h2>
         <p className="muted">把你手上的咖啡豆一支支收进来，解锁产地图鉴和成就。</p>
         <button className="btn btn-primary" onClick={onAdd}>＋ 收藏第一支豆子</button>
         <button className="btn btn-ghost" onClick={onSample}>先看看示例数据</button>
@@ -62,24 +63,25 @@ export default function Inventory({ beans, doses, onOpen, onUse, onAdd, onSample
   return (
     <>
       <section className="hero card">
-        <div>
-          <span className="muted small">在仓</span>
+        <div className="stat">
+          <span>在仓</span>
           <b>{inStock.length}</b>
-          <span className="muted small">支</span>
+          <span>支</span>
         </div>
-        <div>
-          <span className="muted small">余量</span>
+        <div className="stat">
+          <span>余量</span>
           <b>{totalLeft >= 1000 ? (totalLeft / 1000).toFixed(2) : Math.round(totalLeft)}</b>
-          <span className="muted small">{totalLeft >= 1000 ? 'kg' : 'g'}</span>
+          <span>{totalLeft >= 1000 ? 'kg' : 'g'}</span>
         </div>
-        <div>
-          <span className="muted small">约可冲</span>
+        <div className="stat">
+          <span>约可冲</span>
           <b>{Math.floor(totalLeft / doses['手冲'])}</b>
-          <span className="muted small">杯</span>
+          <span>杯</span>
         </div>
+        <LatteCup />
       </section>
 
-      <input className="search" type="search" placeholder="🔍 搜索名称、产地、风味…" value={q} onChange={(e) => setQ(e.target.value)} />
+      <input className="search" type="search" placeholder="搜索名称、产地、风味…" value={q} onChange={(e) => setQ(e.target.value)} />
 
       <div className="filters">
         {FILTERS.map((f) => (

@@ -5,6 +5,7 @@ import Inventory from './components/Inventory.jsx';
 import Collection from './components/Collection.jsx';
 import BeanForm from './components/BeanForm.jsx';
 import BeanDetail from './components/BeanDetail.jsx';
+import { Bean, IconBag, IconMap } from './components/Illustrations.jsx';
 
 const PREFS_KEY = 'bean-vault:doses';
 const DEFAULT_DOSES = { 手冲: 15, 意式: 18 };
@@ -72,7 +73,7 @@ export default function App() {
     <div className="app">
       <header className="topbar">
         <h1>
-          <span className="logo">🫘</span> {tab === 'vault' ? '豆仓' : '图鉴'}
+          <Bean /> <span className="mark">{tab === 'vault' ? '豆仓' : '图鉴'}</span>
         </h1>
         {tab === 'vault' && (
           <button className="btn btn-primary" onClick={() => setSheet({ mode: 'add' })}>＋ 入仓</button>
@@ -98,10 +99,10 @@ export default function App() {
 
       <nav className="tabbar">
         <button className={tab === 'vault' ? 'on' : ''} onClick={() => setTab('vault')}>
-          <span>📦</span>豆仓
+          <IconBag />豆仓
         </button>
         <button className={tab === 'dex' ? 'on' : ''} onClick={() => setTab('dex')}>
-          <span>🗺️</span>图鉴
+          <IconMap />图鉴
         </button>
       </nav>
 

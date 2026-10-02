@@ -3,7 +3,8 @@ import {
   CONTINENTS, ORIGINS, BLEND, PROCESSES, VARIETIES, ROASTS, USAGES, FLAVORS,
 } from '../data.js';
 import { compressImage, today, uid } from '../store.js';
-import { Stars } from './BeanCard.jsx';
+import { Stars, bagColor } from './BeanCard.jsx';
+import { BeanBag } from './Illustrations.jsx';
 
 const EMPTY = {
   name: '', roaster: '', country: '', region: '', farm: '', variety: '', process: '',
@@ -72,7 +73,14 @@ export default function BeanForm({ initial, onSave, onCancel }) {
       </header>
 
       <label className="photo-pick">
-        {b.photo ? <img src={b.photo} alt="豆袋照片" /> : <span>📷 拍一张豆袋（可选）</span>}
+        {b.photo ? (
+          <img src={b.photo} alt="豆袋照片" />
+        ) : (
+          <>
+            <BeanBag color={bagColor(b)} />
+            <span>拍一张豆袋（可选）</span>
+          </>
+        )}
         <input type="file" accept="image/*" onChange={onPhoto} hidden />
       </label>
       {b.photo && (
