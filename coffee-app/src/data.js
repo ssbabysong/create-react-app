@@ -37,7 +37,7 @@ export const PROCESSES = ['水洗', '日晒', '蜜处理', '厌氧', '湿刨法'
 
 export const VARIETIES = [
   '瑰夏', '埃塞原生种', 'SL28', 'SL34', '波旁', '粉红波旁', '铁皮卡',
-  '卡杜拉', '卡杜艾', '帕卡马拉', '卡蒂姆', '象豆', '尤金尼奥', '西达摩',
+  '卡杜拉', '卡杜艾', '帕卡马拉', '卡蒂姆', '卡斯蒂略', '象豆', '尤金尼奥', '西达摩',
 ];
 
 export const ROASTS = ['极浅', '浅', '中浅', '中', '中深', '深'];
@@ -45,8 +45,8 @@ export const ROASTS = ['极浅', '浅', '中浅', '中', '中深', '深'];
 export const USAGES = ['手冲', '意式', '两用'];
 
 export const FLAVORS = [
-  '花香', '柑橘', '莓果', '热带水果', '核果', '葡萄', '茶感', '蜂蜜',
-  '焦糖', '坚果', '巧克力', '酒香', '香料', '奶油',
+  '花香', '茉莉', '玫瑰', '柑橘', '柠檬', '莓果', '草莓', '葡萄', '蜜桃', '荔枝',
+  '热带水果', '芒果', '茶感', '蜂蜜', '焦糖', '坚果', '巧克力', '酒香', '香料', '奶油',
 ];
 
 // 养豆期 / 最佳赏味期（天，从烘焙日算起）
@@ -90,13 +90,13 @@ export const SAMPLE_BEANS = [
   {
     name: '耶加雪菲 孔加 G1', roaster: '示例烘焙商', country: '埃塞俄比亚', region: '耶加雪菲',
     farm: '孔加合作社', variety: '埃塞原生种', process: '水洗', roast: '浅', usage: '手冲',
-    weight: 200, remaining: 140, price: 98, flavors: ['花香', '柑橘', '茶感'], rating: 4,
+    weight: 200, remaining: 140, price: 98, flavors: ['茉莉', '柠檬', '茶感'], rating: 4,
     daysAgo: 12, comment: '茉莉花香很明显，92℃ 1:15 最好喝。',
   },
   {
     name: '翡翠庄园 瑰夏 红标', roaster: '示例烘焙商', country: '巴拿马', region: '波奎特',
     farm: '翡翠庄园', variety: '瑰夏', process: '日晒', roast: '极浅', usage: '手冲',
-    weight: 100, remaining: 100, price: 268, flavors: ['花香', '热带水果', '蜂蜜'], rating: 0,
+    weight: 100, remaining: 100, price: 268, flavors: ['蜜桃', '花香', '蜂蜜'], rating: 0,
     daysAgo: 3, comment: '还在养豆，周末开。',
   },
   {
@@ -104,5 +104,11 @@ export const SAMPLE_BEANS = [
     farm: '', variety: '', process: '日晒', roast: '中深', usage: '意式',
     weight: 500, remaining: 210, price: 88, flavors: ['巧克力', '坚果', '焦糖'], rating: 4,
     daysAgo: 24, comment: '18g 进 36g 出 28s，打奶拉花油脂很稳。',
+  },
+  {
+    name: '荔枝厌氧 卡斯蒂略', roaster: '示例烘焙商', country: '哥伦比亚', region: '考卡',
+    farm: '天堂庄园', variety: '卡斯蒂略', process: '厌氧', roast: '浅', usage: '手冲',
+    weight: 100, remaining: 0, price: 128, flavors: ['荔枝', '玫瑰', '酒香'], rating: 5,
+    daysAgo: 40, comment: '荔枝味炸裂，90℃ 1:16。',
   },
 ];

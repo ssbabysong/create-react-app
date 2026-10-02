@@ -3,8 +3,8 @@ import {
   CONTINENTS, ORIGINS, BLEND, PROCESSES, VARIETIES, ROASTS, USAGES, FLAVORS,
 } from '../data.js';
 import { compressImage, today, uid } from '../store.js';
-import { Stars, bagColor } from './BeanCard.jsx';
-import { BeanBag } from './Illustrations.jsx';
+import { Stars } from './BeanCard.jsx';
+import BeanArt from './Art.jsx';
 
 const EMPTY = {
   name: '', roaster: '', country: '', region: '', farm: '', variety: '', process: '',
@@ -30,7 +30,7 @@ function Chips({ options, value, onChange, multi }) {
 }
 
 export default function BeanForm({ initial, onSave, onCancel }) {
-  const [b, setB] = useState(() => ({ ...EMPTY, ...initial }));
+  const [b, setB] = useState(() => ({ ...EMPTY, ...initial, id: initial?.id || uid() }));
   const [customFlavor, setCustomFlavor] = useState('');
   const isEdit = Boolean(initial?.id);
   const set = (k) => (v) => setB((prev) => ({ ...prev, [k]: v?.target ? v.target.value : v }));
@@ -55,7 +55,6 @@ export default function BeanForm({ initial, onSave, onCancel }) {
     const remaining = isEdit ? Math.min(Number(b.remaining) || 0, weight) : weight;
     onSave({
       ...b,
-      id: b.id || uid(),
       createdAt: b.createdAt || new Date().toISOString(),
       weight,
       remaining,
@@ -67,25 +66,15 @@ export default function BeanForm({ initial, onSave, onCancel }) {
   return (
     <form className="form" onSubmit={submit}>
       <header className="sheet-head">
-        <button type="button" className="btn btn-ghost" onClick={onCancel}>取消</button>
+        <button type="button" className="link" onClick={onCancel}>取消</button>
         <h2>{isEdit ? '编辑豆子' : '新豆入仓'}</h2>
         <button type="submit" className="btn btn-primary" disabled={!b.name.trim()}>保存</button>
       </header>
 
-      <label className="photo-pick">
-        {b.photo ? (
-          <img src={b.photo} alt="豆袋照片" />
-        ) : (
-          <>
-            <BeanBag color={bagColor(b)} />
-            <span>拍一张豆袋（可选）</span>
-          </>
-        )}
-        <input type="file" accept="image/*" onChange={onPhoto} hidden />
-      </label>
-      {b.photo && (
-        <button type="button" className="btn btn-ghost small" onClick={() => set('photo')('')}>移除照片</button>
-      )}
+      <div className="form-cover">
+        <BeanArt bean={b} />
+        <p className="muted small">封面会根据风味自动生成，选几个风味试试</p>
+      </div>
 
       <div className="field">
         <span>名称 *</span>
@@ -187,13 +176,23 @@ export default function BeanForm({ initial, onSave, onCancel }) {
             onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addFlavor())}
             placeholder="自定义风味，如：荔枝"
           />
-          <button type="button" className="btn btn-soft" onClick={addFlavor}>添加</button>
+          <button type="button" className="btn" onClick={addFlavor}>添加</button>
         </div>
       </div>
 
       <div className="field">
         <span>评分</span>
         <Stars value={b.rating} onChange={set('rating')} size="lg" />
+      </div>
+      <div className="field">
+        <span>豆袋照片（可选）</span>
+        <label className="photo-pick">
+          {b.photo ? <img src={b.photo} alt="豆袋照片" /> : <span>＋ 添加照片</span>}
+          <input type="file" accept="image/*" onChange={onPhoto} hidden />
+        </label>
+        {b.photo && (
+          <button type="button" className="link" onClick={() => set('photo')('')}>移除照片</button>
+        )}
       </div>
       <div className="field">
         <span>笔记</span>

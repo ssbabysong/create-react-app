@@ -3,7 +3,10 @@ import {
   ACHIEVEMENTS, BLEND, CONTINENTS, FLAVORS, ORIGINS, PROCESSES, VARIETIES,
 } from '../data.js';
 import { downloadJSON, today } from '../store.js';
-import { CoffeeBranch } from './Illustrations.jsx';
+import { BG } from './Art.jsx';
+
+const CONTINENT_BG = { 非洲: BG.coral, 中南美洲: BG.mint, 亚洲及太平洋: BG.sky };
+const BADGE_BG = [BG.sage, BG.coral, BG.mint, BG.sky, BG.lemon, BG.lavender, BG.peach, BG.pink];
 
 function countBy(beans, key) {
   const m = new Map();
@@ -14,35 +17,31 @@ function countBy(beans, key) {
   return m;
 }
 
-function Progress({ have, total }) {
+function Section({ title, sub, children }) {
   return (
-    <span className="dex-progress">
-      <span className="dex-bar"><span style={{ width: `${(have / total) * 100}%` }} /></span>
-      {have}/{total}
-    </span>
+    <section className="section">
+      <h2 className="section-title">{title}</h2>
+      {sub && <p className="section-sub">{sub}</p>}
+      {children}
+    </section>
   );
 }
 
 function Dex({ title, items, counts }) {
   // 字典外的条目（自定义品种/风味）也展示出来
-  const extras = [...counts.keys()].filter((k) => !items.includes(k));
-  const all = [...items, ...extras];
+  const all = [...items, ...[...counts.keys()].filter((k) => !items.includes(k))];
   const have = all.filter((i) => counts.has(i)).length;
   return (
-    <section className="card">
-      <div className="row between">
-        <h3><span className="mark">{title}</span></h3>
-        <Progress have={have} total={all.length} />
-      </div>
-      <div className="chips">
+    <Section title={title} sub={`已收集 ${have} / ${all.length}`}>
+      <div className="pills">
         {all.map((i) => (
-          <span key={i} className={`chip static ${counts.has(i) ? 'on' : 'locked'}`}>
+          <span key={i} className={`pill ${counts.has(i) ? 'on' : 'locked'}`}>
             {i}
             {counts.get(i) > 1 && <em>×{counts.get(i)}</em>}
           </span>
         ))}
       </div>
-    </section>
+    </Section>
   );
 }
 
@@ -78,28 +77,33 @@ export default function Collection({ beans, setBeans, doses, setDoses }) {
 
   return (
     <>
-      <div className="dex-hero"><CoffeeBranch /></div>
-      <section className="stats card">
+      <section className="intro">
+        <h1 className="headline">咖啡图鉴</h1>
+        <p className="muted">每收藏一支豆子，就点亮一个产地、处理法和风味</p>
+      </section>
+
+      <div className="stats">
         <div><b>{beans.length}</b><span>累计收藏</span></div>
         <div><b>{knownCountries}</b><span>产地</span></div>
         <div><b>{(grams / 1000).toFixed(1)}<small>kg</small></b><span>已喝掉</span></div>
         <div><b><small>¥</small>{Math.round(spent)}</b><span>投入</span></div>
-      </section>
+      </div>
 
-      <section className="card">
-        <div className="row between">
-          <h3><span className="mark">产地图鉴</span></h3>
-          <Progress have={knownCountries} total={ORIGINS.length} />
-        </div>
+      <Section title="产地" sub={`已点亮 ${knownCountries} / ${ORIGINS.length}${countries.has(BLEND) ? `，另有 ${countries.get(BLEND)} 支拼配` : ''}`}>
         {CONTINENTS.map((ct) => (
-          <div key={ct} className="continent">
-            <h4>{ct}</h4>
+          <div key={ct}>
+            <h3 className="sub-title">{ct}</h3>
             <div className="origin-grid">
               {ORIGINS.filter((o) => o.continent === ct).map((o) => {
                 const n = countries.get(o.name) || 0;
                 return (
-                  <div key={o.name} className={`origin-cell ${n ? 'on' : 'locked'}`} title={o.name}>
-                    <span className="flag emoji">{o.flag}</span>
+                  <div
+                    key={o.name}
+                    className={`origin-cell ${n ? 'on' : 'locked'}`}
+                    style={n ? { background: CONTINENT_BG[ct] } : undefined}
+                    title={o.name}
+                  >
+                    <span className="flag">{o.flag}</span>
                     <span className="name">{o.name}</span>
                     {n > 0 && <em>{n}</em>}
                   </div>
@@ -108,38 +112,34 @@ export default function Collection({ beans, setBeans, doses, setDoses }) {
             </div>
           </div>
         ))}
-        {countries.has(BLEND) && <p className="muted small">另有 {countries.get(BLEND)} 支拼配豆</p>}
-      </section>
+      </Section>
 
       <Dex title="处理法" items={PROCESSES} counts={countBy(beans, 'process')} />
       <Dex title="品种" items={VARIETIES} counts={countBy(beans, 'variety')} />
       <Dex title="风味" items={FLAVORS} counts={countBy(beans, 'flavors')} />
 
-      <section className="card">
-        <div className="row between">
-          <h3><span className="mark">成就印章</span></h3>
-          <Progress have={unlocked.length} total={ACHIEVEMENTS.length} />
-        </div>
-        <div className="badges">
-          {ACHIEVEMENTS.map((a) => {
+      <Section title="成就" sub={`已解锁 ${unlocked.length} / ${ACHIEVEMENTS.length}`}>
+        <div className="grid ach-grid">
+          {ACHIEVEMENTS.map((a, i) => {
             const on = unlocked.includes(a);
             return (
-              <div key={a.id} className={`badge ${on ? 'on' : 'locked'}`}>
-                <span className="badge-icon emoji">{a.icon}</span>
+              <div key={a.id} className={`ach ${on ? 'on' : 'locked'}`}>
+                <div className="ach-art" style={on ? { background: BADGE_BG[i % BADGE_BG.length] } : undefined}>
+                  <span>{a.icon}</span>
+                </div>
                 <b>{a.title}</b>
-                <span className="small muted">{a.desc}</span>
+                <p className="muted">{a.desc}</p>
               </div>
             );
           })}
         </div>
-      </section>
+      </Section>
 
-      <section className="card">
-        <h3><span className="mark">设置与备份</span></h3>
-        <div className="grid-2">
+      <Section title="设置与备份" sub="数据只保存在这台设备的浏览器里，换手机或清缓存前记得导出备份">
+        <div className="grid-2 narrow">
           {Object.keys(doses).map((m) => (
             <label key={m} className="field">
-              <span>{m}默认粉量 g</span>
+              <span>{m}默认粉量（g）</span>
               <input
                 type="number"
                 inputMode="decimal"
@@ -150,16 +150,13 @@ export default function Collection({ beans, setBeans, doses, setDoses }) {
             </label>
           ))}
         </div>
-        <p className="muted small">数据只保存在这台设备的浏览器里，换手机或清缓存前记得导出备份。</p>
-        <div className="row gap-s wrap">
-          <button className="btn btn-soft" onClick={() => downloadJSON({ beans, doses }, `豆仓备份-${today()}.json`)}>
-            导出备份
-          </button>
-          <button className="btn btn-soft" onClick={() => fileRef.current.click()}>导入备份</button>
+        <div className="actions left">
+          <button className="btn" onClick={() => downloadJSON({ beans, doses }, `豆仓备份-${today()}.json`)}>导出备份</button>
+          <button className="btn" onClick={() => fileRef.current.click()}>导入备份</button>
           <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={importFile} />
         </div>
         {msg && <p className="small">{msg}</p>}
-      </section>
+      </Section>
     </>
   );
 }

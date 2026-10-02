@@ -5,7 +5,7 @@ import Inventory from './components/Inventory.jsx';
 import Collection from './components/Collection.jsx';
 import BeanForm from './components/BeanForm.jsx';
 import BeanDetail from './components/BeanDetail.jsx';
-import { Bean, IconBag, IconMap } from './components/Illustrations.jsx';
+import { IconClose, IconPlus, IconSearch, Logo } from './components/Art.jsx';
 
 const PREFS_KEY = 'bean-vault:doses';
 const DEFAULT_DOSES = { 手冲: 15, 意式: 18 };
@@ -25,6 +25,8 @@ export default function App() {
   const [sheet, setSheet] = useState(null);
   const [doses, setDoses] = useState(loadDoses);
   const [toast, setToast] = useState('');
+  const [searching, setSearching] = useState(false);
+  const [q, setQ] = useState('');
 
   useEffect(() => {
     try {
@@ -62,7 +64,7 @@ export default function App() {
         id: uid(),
         roastDate: new Date(now - daysAgo * 864e5).toISOString().slice(0, 10),
         createdAt: new Date(now - i * 1000).toISOString(),
-        finished: false,
+        finished: b.remaining === 0,
         photo: '',
         log: [],
       })),
@@ -71,22 +73,44 @@ export default function App() {
 
   return (
     <div className="app">
-      <header className="topbar">
-        <h1>
-          <Bean /> <span className="mark">{tab === 'vault' ? '豆仓' : '图鉴'}</span>
-        </h1>
-        {tab === 'vault' && (
-          <button className="btn btn-primary" onClick={() => setSheet({ mode: 'add' })}>＋ 入仓</button>
+      <header className="site-header">
+        <div className="header-inner">
+          <button className="logo-btn" onClick={() => setTab('vault')} aria-label="回到豆仓">
+            <Logo />
+          </button>
+          <nav className="nav">
+            <button className={tab === 'vault' ? 'on' : ''} onClick={() => setTab('vault')}>豆仓</button>
+            <button className={tab === 'dex' ? 'on' : ''} onClick={() => setTab('dex')}>图鉴</button>
+          </nav>
+          <div className="header-icons">
+            {tab === 'vault' && beans.length > 0 && (
+              <button className="icon-btn" onClick={() => setSearching((v) => !v)} aria-label="搜索"><IconSearch /></button>
+            )}
+            <button className="icon-btn" onClick={() => setSheet({ mode: 'add' })} aria-label="添加豆子"><IconPlus /></button>
+          </div>
+        </div>
+        {searching && tab === 'vault' && (
+          <div className="search-bar">
+            <input
+              autoFocus
+              type="search"
+              placeholder="搜索名称、产地、品种、风味…"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+            />
+            <button className="icon-btn" onClick={() => { setSearching(false); setQ(''); }} aria-label="关闭搜索"><IconClose /></button>
+          </div>
         )}
       </header>
 
       {saveError && <div className="alert">{saveError}</div>}
 
-      <main>
+      <main className="page">
         {tab === 'vault' ? (
           <Inventory
             beans={beans}
             doses={doses}
+            q={q}
             onOpen={(id) => setSheet({ mode: 'view', id })}
             onUse={handleUse}
             onAdd={() => setSheet({ mode: 'add' })}
@@ -97,20 +121,13 @@ export default function App() {
         )}
       </main>
 
-      <nav className="tabbar">
-        <button className={tab === 'vault' ? 'on' : ''} onClick={() => setTab('vault')}>
-          <IconBag />豆仓
-        </button>
-        <button className={tab === 'dex' ? 'on' : ''} onClick={() => setTab('dex')}>
-          <IconMap />图鉴
-        </button>
-      </nav>
+      <footer className="site-footer">豆仓 Bean Vault · 数据保存在本机</footer>
 
       {toast && <div className="toast">{toast}</div>}
 
       {sheet && (
         <div className="sheet-backdrop" onClick={(e) => e.target === e.currentTarget && setSheet(null)}>
-          <div className="sheet" role="dialog" aria-modal="true">
+          <div className={`sheet sheet-${sheet.mode}`} role="dialog" aria-modal="true">
             {sheet.mode === 'add' && (
               <BeanForm
                 onCancel={() => setSheet(null)}
@@ -134,6 +151,7 @@ export default function App() {
             {sheet.mode === 'view' && current && (
               <BeanDetail
                 bean={current}
+                doses={doses}
                 onClose={() => setSheet(null)}
                 onEdit={() => setSheet({ mode: 'edit', id: current.id })}
                 onDelete={(id) => {
