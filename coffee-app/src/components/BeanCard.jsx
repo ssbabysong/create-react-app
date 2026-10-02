@@ -1,11 +1,6 @@
-import { originOf, BLEND } from '../data.js';
 import { freshness } from '../store.js';
-import BeanArt from './Art.jsx';
-
-export function flagOf(country) {
-  if (!country) return '';
-  return country === BLEND ? '🫘' : originOf(country)?.flag || '📍';
-}
+import { usePhoto } from '../photos.js';
+import { Placeholder } from './Line.jsx';
 
 export function Stars({ value = 0, onChange, size = 'sm' }) {
   return (
@@ -26,8 +21,6 @@ export function Stars({ value = 0, onChange, size = 'sm' }) {
   );
 }
 
-const BADGE = { resting: '养豆中', soon: '尽快喝', stale: '风味衰退', done: '已喝完' };
-
 export function Status({ bean }) {
   const f = freshness(bean);
   return (
@@ -38,27 +31,32 @@ export function Status({ bean }) {
   );
 }
 
+export function Cover({ bean }) {
+  const url = usePhoto(bean.id, Boolean(bean.hasPhoto));
+  return url ? <img className="cover-img" src={url} alt={`${bean.name} 豆袋照片`} /> : <Placeholder bean={bean} />;
+}
+
 export default function BeanTile({ bean, doses, onOpen, onUse }) {
   const f = freshness(bean);
   const method = bean.usage === '意式' ? '意式' : '手冲';
-  const where = [bean.country && `${flagOf(bean.country)} ${bean.country}`, bean.farm || bean.region].filter(Boolean).join(' · ');
+  const meta = [bean.country, bean.process].filter(Boolean).join(' · ');
 
   return (
     <article className={`tile ${bean.finished ? 'is-finished' : ''}`}>
-      <button className="tile-art" onClick={onOpen} aria-label={`查看 ${bean.name}`}>
-        <BeanArt bean={bean} />
-        {BADGE[f.key] && <span className={`badge badge-${f.key}`}>{BADGE[f.key]}</span>}
+      <button className="tile-cover" onClick={onOpen} aria-label={`查看 ${bean.name}`}>
+        <Cover bean={bean} />
       </button>
       <div className="tile-body">
+        {bean.roaster && <p className="eyebrow">{bean.roaster}</p>}
         <button className="tile-title" onClick={onOpen}>{bean.name}</button>
-        {(bean.variety || bean.process) && <p>{[bean.variety, bean.process].filter(Boolean).join(' ')}</p>}
-        {where && <p>{where}</p>}
+        {meta && <p className="muted">{meta}</p>}
+        {bean.flavors?.length > 0 && <p className="muted">{bean.flavors.slice(0, 3).join(' / ')}</p>}
         <p className="tile-meta">
           {bean.finished ? (
-            <>{bean.rating > 0 ? <Stars value={bean.rating} /> : '已喝完'}</>
+            bean.rating > 0 ? <Stars value={bean.rating} /> : '已喝完'
           ) : (
             <>
-              余 {bean.remaining}g{f.d != null && <span className="muted"> · 第 {f.d} 天</span>}
+              {bean.remaining}g{f.d != null && <span className="muted"> · 第 {f.d} 天</span>}
             </>
           )}
         </p>

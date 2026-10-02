@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FRESHNESS } from './data.js';
+import { deletePhoto, putPhoto } from './photos.js';
 
 const KEY = 'bean-vault:v1';
 const DAY = 24 * 60 * 60 * 1000;
@@ -26,7 +27,7 @@ export function useBeans() {
       localStorage.setItem(KEY, JSON.stringify(beans));
       setSaveError('');
     } catch {
-      setSaveError('本地存储已满，请删除部分照片或导出备份。');
+      setSaveError('本地存储已满，请导出备份后清理一些已喝完的豆子。');
     }
   }, [beans]);
 
@@ -37,7 +38,19 @@ export function useBeans() {
         : [bean, ...list],
     );
 
-  const remove = (id) => setBeans((list) => list.filter((b) => b.id !== id));
+  // 旧版本把照片存在豆子数据里，挪到 IndexedDB
+  useEffect(() => {
+    const legacy = beans.filter((b) => b.photo);
+    if (!legacy.length) return;
+    Promise.all(legacy.map((b) => putPhoto(b.id, b.photo))).then(() =>
+      setBeans((list) => list.map(({ photo, ...b }) => (photo ? { ...b, hasPhoto: true } : b))),
+    );
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const remove = (id) => {
+    deletePhoto(id);
+    setBeans((list) => list.filter((b) => b.id !== id));
+  };
 
   // 称出一份豆子：扣减余量并记录
   const use = (id, grams, method) =>
@@ -76,28 +89,6 @@ export function freshness(bean) {
   if (d <= peak) return { key: 'peak', label: `最佳赏味 · 第 ${d} 天`, pct, d };
   if (d <= peak + 30) return { key: 'soon', label: `尽快喝完 · 第 ${d} 天`, pct, d };
   return { key: 'stale', label: `风味衰退 · 第 ${d} 天`, pct, d };
-}
-
-// 将照片压缩为小尺寸 JPEG dataURL，避免撑爆 localStorage
-export function compressImage(file, max = 480) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = reject;
-    reader.onload = () => {
-      const img = new Image();
-      img.onerror = reject;
-      img.onload = () => {
-        const scale = Math.min(1, max / Math.max(img.width, img.height));
-        const canvas = document.createElement('canvas');
-        canvas.width = Math.round(img.width * scale);
-        canvas.height = Math.round(img.height * scale);
-        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL('image/jpeg', 0.72));
-      };
-      img.src = reader.result;
-    };
-    reader.readAsDataURL(file);
-  });
 }
 
 export function downloadJSON(data, filename) {

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { today, uid } from '../store.js';
-import BeanArt, { IconClose } from './Art.jsx';
-import { Stars, Status, flagOf } from './BeanCard.jsx';
+import { getPhoto, putPhoto } from '../photos.js';
+import { IconClose } from './Line.jsx';
+import { Cover, Stars, Status } from './BeanCard.jsx';
 
 const fmt = (iso) => {
   const d = new Date(iso);
@@ -12,7 +13,7 @@ export default function BeanDetail({ bean, doses, onClose, onEdit, onDelete, onU
   const [grams, setGrams] = useState(doses[bean.usage === '意式' ? '意式' : '手冲']);
   const g = Number(grams) || 0;
   const rows = [
-    ['产地', bean.country && `${flagOf(bean.country)} ${bean.country}`],
+    ['产地', bean.country],
     ['产区', bean.region],
     ['庄园 / 处理站', bean.farm],
     ['品种', bean.variety],
@@ -26,10 +27,12 @@ export default function BeanDetail({ bean, doses, onClose, onEdit, onDelete, onU
     ['每杯成本', bean.price && bean.weight ? `¥${((bean.price / bean.weight) * doses['手冲']).toFixed(1)}（${doses['手冲']}g）` : ''],
   ].filter(([, v]) => v);
 
-  const rebuy = () =>
+  const rebuy = async () => {
+    const id = uid();
+    if (bean.hasPhoto) await putPhoto(id, await getPhoto(bean.id));
     onSave({
       ...bean,
-      id: uid(),
+      id,
       createdAt: new Date().toISOString(),
       roastDate: today(),
       remaining: bean.weight,
@@ -37,6 +40,7 @@ export default function BeanDetail({ bean, doses, onClose, onEdit, onDelete, onU
       log: [],
       rating: 0,
     });
+  };
 
   const step = (d) => setGrams((v) => Math.max(1, (Number(v) || 0) + d));
 
@@ -45,8 +49,7 @@ export default function BeanDetail({ bean, doses, onClose, onEdit, onDelete, onU
       <button className="icon-btn close" onClick={onClose} aria-label="关闭"><IconClose /></button>
 
       <div className="detail-media">
-        <BeanArt bean={bean} />
-        {bean.photo && <img className="detail-photo" src={bean.photo} alt="豆袋照片" />}
+        <div className="detail-cover"><Cover bean={bean} /></div>
       </div>
 
       <div className="detail-info">

@@ -5,7 +5,8 @@ import Inventory from './components/Inventory.jsx';
 import Collection from './components/Collection.jsx';
 import BeanForm from './components/BeanForm.jsx';
 import BeanDetail from './components/BeanDetail.jsx';
-import { IconClose, IconPlus, IconSearch, Logo } from './components/Art.jsx';
+import { IconClose, IconPlus, IconSearch, Logo } from './components/Line.jsx';
+import { deletePhoto, putPhoto } from './photos.js';
 
 const PREFS_KEY = 'bean-vault:doses';
 const DEFAULT_DOSES = { 手冲: 15, 意式: 18 };
@@ -48,12 +49,24 @@ export default function App() {
 
   const current = sheet?.id && beans.find((b) => b.id === sheet.id);
 
+  // photo：undefined 不改动，'' 删除，dataURL 保存为封面
+  const saveBean = async (bean, photo) => {
+    let next = bean;
+    if (photo !== undefined) {
+      if (photo) await putPhoto(bean.id, photo);
+      else await deletePhoto(bean.id);
+      next = { ...bean, hasPhoto: Boolean(photo) };
+    }
+    upsert(next);
+    return next;
+  };
+
   const handleUse = (id, grams, method) => {
     const bean = beans.find((b) => b.id === id);
     if (!bean || grams <= 0) return;
     use(id, grams, method);
     const left = Math.max(0, bean.remaining - grams);
-    setToast(left === 0 ? `「${bean.name}」喝完啦 🎉` : `${method} −${grams}g · 还剩 ${+left.toFixed(1)}g`);
+    setToast(left === 0 ? `「${bean.name}」已喝完` : `${method} −${grams}g · 还剩 ${+left.toFixed(1)}g`);
   };
 
   const loadSamples = () => {
@@ -65,7 +78,6 @@ export default function App() {
         roastDate: new Date(now - daysAgo * 864e5).toISOString().slice(0, 10),
         createdAt: new Date(now - i * 1000).toISOString(),
         finished: b.remaining === 0,
-        photo: '',
         log: [],
       })),
     );
@@ -131,8 +143,8 @@ export default function App() {
             {sheet.mode === 'add' && (
               <BeanForm
                 onCancel={() => setSheet(null)}
-                onSave={(b) => {
-                  upsert(b);
+                onSave={async (b, photo) => {
+                  await saveBean(b, photo);
                   setSheet(null);
                   setToast(`「${b.name}」已入仓`);
                 }}
@@ -142,8 +154,8 @@ export default function App() {
               <BeanForm
                 initial={current}
                 onCancel={() => setSheet({ mode: 'view', id: current.id })}
-                onSave={(b) => {
-                  upsert(b);
+                onSave={async (b, photo) => {
+                  await saveBean(b, photo);
                   setSheet({ mode: 'view', id: b.id });
                 }}
               />

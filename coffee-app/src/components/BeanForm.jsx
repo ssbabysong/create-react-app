@@ -1,15 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   CONTINENTS, ORIGINS, BLEND, PROCESSES, VARIETIES, ROASTS, USAGES, FLAVORS,
 } from '../data.js';
-import { compressImage, today, uid } from '../store.js';
+import { today, uid } from '../store.js';
+import { getPhoto, resizeImage } from '../photos.js';
+import { extractBean, getApiKey } from '../extract.js';
 import { Stars } from './BeanCard.jsx';
-import BeanArt from './Art.jsx';
+import { IconCamera } from './Line.jsx';
+import ApiKeyField from './ApiKeyField.jsx';
 
 const EMPTY = {
   name: '', roaster: '', country: '', region: '', farm: '', variety: '', process: '',
   roast: '浅', usage: '手冲', roastDate: today(), weight: 200, remaining: 200, price: '',
-  flavors: [], rating: 0, comment: '', photo: '', finished: false, log: [],
+  flavors: [], rating: 0, comment: '', finished: false, log: [],
 };
 
 function Chips({ options, value, onChange, multi }) {
@@ -29,18 +32,75 @@ function Chips({ options, value, onChange, multi }) {
   );
 }
 
+const isKnownCountry = (c) => !c || c === BLEND || ORIGINS.some((o) => o.name === c);
+
 export default function BeanForm({ initial, onSave, onCancel }) {
   const [b, setB] = useState(() => ({ ...EMPTY, ...initial, id: initial?.id || uid() }));
   const [customFlavor, setCustomFlavor] = useState('');
   const isEdit = Boolean(initial?.id);
-  const set = (k) => (v) => setB((prev) => ({ ...prev, [k]: v?.target ? v.target.value : v }));
+  const touched = useRef(new Set());
+  const latest = useRef(b);
+  latest.current = b;
+  const set = (k) => (v) => {
+    touched.current.add(k);
+    setB((prev) => ({ ...prev, [k]: v?.target ? v.target.value : v }));
+  };
 
-  const knownCountry = !b.country || b.country === BLEND || ORIGINS.some((o) => o.name === b.country);
-  const [otherCountry, setOtherCountry] = useState(!knownCountry);
+  const [otherCountry, setOtherCountry] = useState(!isKnownCountry(b.country));
 
-  const onPhoto = async (e) => {
-    const file = e.target.files?.[0];
-    if (file) set('photo')(await compressImage(file));
+  // 封面照片（dataURL）；photoChanged 标记本次是否改过
+  const [photo, setPhoto] = useState('');
+  const [photoChanged, setPhotoChanged] = useState(false);
+  const [shots, setShots] = useState([]); // 发给识别的照片
+  const [scan, setScan] = useState({ state: 'idle', msg: '' });
+  const [showKey, setShowKey] = useState(false);
+  const [hasKey, setHasKey] = useState(() => Boolean(getApiKey()));
+
+  useEffect(() => {
+    if (initial?.hasPhoto) getPhoto(initial.id).then((u) => setPhoto((p) => p || u));
+  }, [initial]);
+
+  const runScan = async (images) => {
+    setScan({ state: 'loading', msg: '正在识别豆袋信息…' });
+    try {
+      const data = await extractBean(images);
+      const prev = latest.current;
+      const next = { ...prev };
+      let count = 0;
+      const fill = (k, v) => {
+        if (touched.current.has(k) || v === '' || v == null || v === 0) return;
+        next[k] = v;
+        count += 1;
+      };
+      ['name', 'roaster', 'country', 'region', 'farm', 'variety', 'process', 'roast', 'usage', 'roastDate'].forEach((k) => fill(k, data[k]));
+      if (data.weight > 0) fill('weight', data.weight);
+      if (data.price > 0) fill('price', data.price);
+      if (data.notes && !prev.comment) fill('comment', data.notes);
+      if (!touched.current.has('flavors') && data.flavors?.length) {
+        next.flavors = [...new Set([...prev.flavors, ...data.flavors])];
+        count += 1;
+      }
+      setB(next);
+      if (data.country) setOtherCountry(!isKnownCountry(data.country));
+      setScan({ state: 'done', msg: count ? `已从照片识别出 ${count} 项信息，请核对一下` : '照片里没有读到可用的信息，请手动填写' });
+    } catch (err) {
+      setScan({ state: 'error', msg: err.message });
+    }
+  };
+
+  const onPhotos = async (e) => {
+    const files = [...(e.target.files || [])].slice(0, 3);
+    e.target.value = '';
+    if (!files.length) return;
+    try {
+      setPhoto(await resizeImage(files[0], 1080));
+      setPhotoChanged(true);
+      const images = await Promise.all(files.map((f) => resizeImage(f, 1568, 0.85)));
+      setShots(images);
+      if (hasKey) runScan(images);
+    } catch (err) {
+      setScan({ state: 'error', msg: err.message });
+    }
   };
 
   const addFlavor = () => {
@@ -53,14 +113,18 @@ export default function BeanForm({ initial, onSave, onCancel }) {
     e.preventDefault();
     const weight = Number(b.weight) || 0;
     const remaining = isEdit ? Math.min(Number(b.remaining) || 0, weight) : weight;
-    onSave({
-      ...b,
-      createdAt: b.createdAt || new Date().toISOString(),
-      weight,
-      remaining,
-      price: b.price === '' ? '' : Number(b.price),
-      finished: remaining === 0,
-    });
+    // 第二个参数：照片没改动时为 undefined，移除时为 ''，新照片为 dataURL
+    onSave(
+      {
+        ...b,
+        createdAt: b.createdAt || new Date().toISOString(),
+        weight,
+        remaining,
+        price: b.price === '' ? '' : Number(b.price),
+        finished: remaining === 0,
+      },
+      photoChanged ? photo : undefined,
+    );
   };
 
   return (
@@ -71,10 +135,54 @@ export default function BeanForm({ initial, onSave, onCancel }) {
         <button type="submit" className="btn btn-primary" disabled={!b.name.trim()}>保存</button>
       </header>
 
-      <div className="form-cover">
-        <BeanArt bean={b} />
-        <p className="muted small">封面会根据风味自动生成，选几个风味试试</p>
+      <div className="capture">
+        <label className={`capture-box ${photo ? 'has-photo' : ''}`}>
+          {photo ? (
+            <img src={photo} alt="豆袋照片" />
+          ) : (
+            <span className="capture-empty">
+              <IconCamera />
+              <b>拍豆袋</b>
+              <span className="muted small">可以一次选正面和背面</span>
+            </span>
+          )}
+          <input type="file" accept="image/*" multiple hidden onChange={onPhotos} />
+        </label>
+        <div className="capture-side">
+          {!photo && <p className="muted small">照片会作为封面。{hasKey ? '名称、产地、处理法、风味等会自动识别填好。' : ''}</p>}
+          {photo && (
+            <div className="row gap wrap">
+              <label className="link">
+                更换照片
+                <input type="file" accept="image/*" multiple hidden onChange={onPhotos} />
+              </label>
+              {hasKey && shots.length > 0 && scan.state !== 'loading' && (
+                <button type="button" className="link" onClick={() => runScan(shots)}>重新识别</button>
+              )}
+              <button type="button" className="link" onClick={() => { setPhoto(''); setPhotoChanged(true); setShots([]); }}>移除</button>
+            </div>
+          )}
+          {scan.msg && <p className={`scan scan-${scan.state}`}>{scan.msg}</p>}
+          {!hasKey && !showKey && (
+            <p className="muted small">
+              想拍照自动识别？
+              <button type="button" className="link inline" onClick={() => setShowKey(true)}>设置 API Key</button>
+            </p>
+          )}
+        </div>
       </div>
+
+      {showKey && (
+        <ApiKeyField
+          onSaved={(key) => {
+            setHasKey(Boolean(key));
+            if (key) {
+              setShowKey(false);
+              if (shots.length) runScan(shots);
+            }
+          }}
+        />
+      )}
 
       <div className="field">
         <span>名称 *</span>
@@ -99,11 +207,11 @@ export default function BeanForm({ initial, onSave, onCancel }) {
             {CONTINENTS.map((ct) => (
               <optgroup key={ct} label={ct}>
                 {ORIGINS.filter((o) => o.continent === ct).map((o) => (
-                  <option key={o.name} value={o.name}>{o.flag} {o.name}</option>
+                  <option key={o.name} value={o.name}>{o.name}</option>
                 ))}
               </optgroup>
             ))}
-            <option value={BLEND}>🫘 拼配</option>
+            <option value={BLEND}>拼配</option>
             <option value="__other">其他…</option>
           </select>
         </div>
@@ -183,16 +291,6 @@ export default function BeanForm({ initial, onSave, onCancel }) {
       <div className="field">
         <span>评分</span>
         <Stars value={b.rating} onChange={set('rating')} size="lg" />
-      </div>
-      <div className="field">
-        <span>豆袋照片（可选）</span>
-        <label className="photo-pick">
-          {b.photo ? <img src={b.photo} alt="豆袋照片" /> : <span>＋ 添加照片</span>}
-          <input type="file" accept="image/*" onChange={onPhoto} hidden />
-        </label>
-        {b.photo && (
-          <button type="button" className="link" onClick={() => set('photo')('')}>移除照片</button>
-        )}
       </div>
       <div className="field">
         <span>笔记</span>

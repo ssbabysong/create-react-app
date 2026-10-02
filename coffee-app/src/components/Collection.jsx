@@ -3,10 +3,8 @@ import {
   ACHIEVEMENTS, BLEND, CONTINENTS, FLAVORS, ORIGINS, PROCESSES, VARIETIES,
 } from '../data.js';
 import { downloadJSON, today } from '../store.js';
-import { BG } from './Art.jsx';
-
-const CONTINENT_BG = { 非洲: BG.coral, 中南美洲: BG.mint, 亚洲及太平洋: BG.sky };
-const BADGE_BG = [BG.sage, BG.coral, BG.mint, BG.sky, BG.lemon, BG.lavender, BG.peach, BG.pink];
+import { getPhoto, putPhoto } from '../photos.js';
+import ApiKeyField from './ApiKeyField.jsx';
 
 function countBy(beans, key) {
   const m = new Map();
@@ -54,6 +52,12 @@ export default function Collection({ beans, setBeans, doses, setDoses }) {
   const unlocked = ACHIEVEMENTS.filter((a) => a.test(beans));
   const knownCountries = ORIGINS.filter((o) => countries.has(o.name)).length;
 
+  const exportAll = async () => {
+    const photos = {};
+    for (const b of beans.filter((x) => x.hasPhoto)) photos[b.id] = await getPhoto(b.id);
+    downloadJSON({ beans, doses, photos }, `豆仓备份-${today()}.json`);
+  };
+
   const importFile = async (e) => {
     const file = e.target.files?.[0];
     e.target.value = '';
@@ -68,6 +72,7 @@ export default function Collection({ beans, setBeans, doses, setDoses }) {
           return [...list, ...cur.filter((b) => !ids.has(b.id))];
         });
         if (data.doses) setDoses(data.doses);
+        if (data.photos) await Promise.all(Object.entries(data.photos).map(([id, url]) => putPhoto(id, url)));
         setMsg(`已导入 ${list.length} 支豆子`);
       }
     } catch {
@@ -97,16 +102,10 @@ export default function Collection({ beans, setBeans, doses, setDoses }) {
               {ORIGINS.filter((o) => o.continent === ct).map((o) => {
                 const n = countries.get(o.name) || 0;
                 return (
-                  <div
-                    key={o.name}
-                    className={`origin-cell ${n ? 'on' : 'locked'}`}
-                    style={n ? { background: CONTINENT_BG[ct] } : undefined}
-                    title={o.name}
-                  >
-                    <span className="flag">{o.flag}</span>
-                    <span className="name">{o.name}</span>
-                    {n > 0 && <em>{n}</em>}
-                  </div>
+                  <span key={o.name} className={`origin-cell ${n ? 'on' : 'locked'}`}>
+                    {o.name}
+                    {n > 0 && <sup>{n}</sup>}
+                  </span>
                 );
               })}
             </div>
@@ -119,23 +118,25 @@ export default function Collection({ beans, setBeans, doses, setDoses }) {
       <Dex title="风味" items={FLAVORS} counts={countBy(beans, 'flavors')} />
 
       <Section title="成就" sub={`已解锁 ${unlocked.length} / ${ACHIEVEMENTS.length}`}>
-        <div className="grid ach-grid">
+        <ol className="ach-list">
           {ACHIEVEMENTS.map((a, i) => {
             const on = unlocked.includes(a);
             return (
-              <div key={a.id} className={`ach ${on ? 'on' : 'locked'}`}>
-                <div className="ach-art" style={on ? { background: BADGE_BG[i % BADGE_BG.length] } : undefined}>
-                  <span>{a.icon}</span>
-                </div>
-                <b>{a.title}</b>
-                <p className="muted">{a.desc}</p>
-              </div>
+              <li key={a.id} className={on ? 'on' : 'locked'}>
+                <span className="ach-no">{String(i + 1).padStart(2, '0')}</span>
+                <span className="ach-text">
+                  <b>{a.title}</b>
+                  <span className="muted">{a.desc}</span>
+                </span>
+                <span className="ach-state">{on ? '已解锁' : '未解锁'}</span>
+              </li>
             );
           })}
-        </div>
+        </ol>
       </Section>
 
-      <Section title="设置与备份" sub="数据只保存在这台设备的浏览器里，换手机或清缓存前记得导出备份">
+      <Section title="设置与备份" sub="数据只保存在这台设备的浏览器里，换手机或清缓存前记得导出备份（含照片）">
+        <div className="narrow"><ApiKeyField /></div>
         <div className="grid-2 narrow">
           {Object.keys(doses).map((m) => (
             <label key={m} className="field">
@@ -151,7 +152,7 @@ export default function Collection({ beans, setBeans, doses, setDoses }) {
           ))}
         </div>
         <div className="actions left">
-          <button className="btn" onClick={() => downloadJSON({ beans, doses }, `豆仓备份-${today()}.json`)}>导出备份</button>
+          <button className="btn" onClick={exportAll}>导出备份</button>
           <button className="btn" onClick={() => fileRef.current.click()}>导入备份</button>
           <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={importFile} />
         </div>

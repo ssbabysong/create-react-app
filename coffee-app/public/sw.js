@@ -1,5 +1,5 @@
 // 简单离线缓存：页面走网络优先，静态资源走缓存优先
-const CACHE = 'bean-vault-v3';
+const CACHE = 'bean-vault-v4';
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(['./', './manifest.webmanifest', './icon.svg'])));

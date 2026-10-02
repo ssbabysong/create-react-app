@@ -1,6 +1,6 @@
 import { freshness } from '../store.js';
 import BeanTile from './BeanCard.jsx';
-import BeanArt from './Art.jsx';
+import { PourOverLine } from './Line.jsx';
 
 const SECTIONS = [
   { key: 'peak', title: '最佳赏味', sub: '现在冲，正好喝' },
@@ -12,25 +12,15 @@ const SECTIONS = [
 
 const byRoast = (a, b) => (b.roastDate || '').localeCompare(a.roastDate || '');
 
-const PREVIEW = [
-  { id: 'p1', name: 'p1', flavors: ['蜜桃', '茉莉'] },
-  { id: 'p2', name: 'p2', flavors: ['荔枝'] },
-  { id: 'p3', name: 'p3', flavors: ['茶感', '柑橘'] },
-];
-
 export default function Inventory({ beans, doses, q, onOpen, onUse, onAdd, onSample }) {
   if (beans.length === 0) {
     return (
       <section className="empty">
+        <PourOverLine className="empty-art" />
         <h1 className="headline">收藏每一支喝过的咖啡豆</h1>
-        <p className="muted">每一支豆子都会按风味得到一张专属插画，攒满产地图鉴和成就。</p>
-        <div className="grid grid-3">
-          {PREVIEW.map((b) => (
-            <div key={b.id} className="tile-art"><BeanArt bean={b} /></div>
-          ))}
-        </div>
+        <p className="muted">拍下豆袋，信息自动识别入仓。慢慢攒满产地、处理法与风味。</p>
         <div className="actions">
-          <button className="btn btn-primary" onClick={onAdd}>收藏第一支豆子</button>
+          <button className="btn btn-primary" onClick={onAdd}>拍照录入第一支豆子</button>
           <button className="btn" onClick={onSample}>先看看示例数据</button>
         </div>
       </section>
