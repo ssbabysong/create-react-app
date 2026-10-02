@@ -11,7 +11,6 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",
     "@fontsource/assistant": "^5.3.0",
-    "@fontsource/cormorant-garamond": "^5.3.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },

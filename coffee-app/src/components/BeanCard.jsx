@@ -1,6 +1,6 @@
 import { freshness } from '../store.js';
-import { usePhoto } from '../photos.js';
-import { Placeholder } from './Line.jsx';
+import BeanArt from './Art.jsx';
+import { IconCup, IconDrip } from './Line.jsx';
 
 export function Stars({ value = 0, onChange, size = 'sm' }) {
   return (
@@ -21,51 +21,32 @@ export function Stars({ value = 0, onChange, size = 'sm' }) {
   );
 }
 
-export function Status({ bean }) {
-  const f = freshness(bean);
-  return (
-    <span className="status">
-      <i className={`dot dot-${f.key}`} />
-      {f.label}
-    </span>
-  );
-}
-
-export function Cover({ bean }) {
-  const url = usePhoto(bean.id, Boolean(bean.hasPhoto));
-  return url ? <img className="cover-img" src={url} alt={`${bean.name} 豆袋照片`} /> : <Placeholder bean={bean} />;
-}
-
 export default function BeanTile({ bean, doses, onOpen, onUse }) {
   const f = freshness(bean);
   const method = bean.usage === '意式' ? '意式' : '手冲';
-  const meta = [bean.country, bean.process].filter(Boolean).join(' · ');
 
   return (
     <article className={`tile ${bean.finished ? 'is-finished' : ''}`}>
-      <button className="tile-cover" onClick={onOpen} aria-label={`查看 ${bean.name}`}>
-        <Cover bean={bean} />
-      </button>
-      <div className="tile-body">
-        {bean.roaster && <p className="eyebrow">{bean.roaster}</p>}
-        <button className="tile-title" onClick={onOpen}>{bean.name}</button>
-        {meta && <p className="muted">{meta}</p>}
-        {bean.flavors?.length > 0 && <p className="muted">{bean.flavors.slice(0, 3).join(' / ')}</p>}
-        <p className="tile-meta">
-          {bean.finished ? (
-            bean.rating > 0 ? <Stars value={bean.rating} /> : '已喝完'
-          ) : (
-            <>
-              {bean.remaining}g{f.d != null && <span className="muted"> · 第 {f.d} 天</span>}
-            </>
-          )}
-        </p>
+      <div className="tile-art">
+        <button className="tile-open" onClick={onOpen} aria-label={`查看 ${bean.name}`}>
+          <BeanArt bean={bean} />
+        </button>
         {!bean.finished && (
-          <button className="link" onClick={() => onUse(bean.id, doses[method], method)}>
-            冲一杯 −{doses[method]}g
+          <button
+            className="quick"
+            onClick={() => onUse(bean.id, doses[method], method)}
+            aria-label={`${method}一杯，扣 ${doses[method]} 克`}
+            title={`冲一杯 −${doses[method]}g`}
+          >
+            {method === '意式' ? <IconCup /> : <IconDrip />}
           </button>
         )}
       </div>
+      <button className="tile-title" onClick={onOpen}>{bean.name}</button>
+      <p className="tile-meta">
+        <i className={`dot dot-${f.key}`} />
+        {bean.finished ? (bean.rating > 0 ? <Stars value={bean.rating} /> : '喝完了') : `${bean.remaining}g`}
+      </p>
     </article>
   );
 }

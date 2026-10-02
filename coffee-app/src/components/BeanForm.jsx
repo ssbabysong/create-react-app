@@ -8,6 +8,7 @@ import { extractBean, getApiKey } from '../extract.js';
 import { Stars } from './BeanCard.jsx';
 import { IconCamera } from './Line.jsx';
 import ApiKeyField from './ApiKeyField.jsx';
+import BeanArt from './Art.jsx';
 
 const EMPTY = {
   name: '', roaster: '', country: '', region: '', farm: '', variety: '', process: '',
@@ -61,7 +62,7 @@ export default function BeanForm({ initial, onSave, onCancel }) {
   }, [initial]);
 
   const runScan = async (images) => {
-    setScan({ state: 'loading', msg: '正在识别豆袋信息…' });
+    setScan({ state: 'loading', msg: '识别中…' });
     try {
       const data = await extractBean(images);
       const prev = latest.current;
@@ -82,7 +83,7 @@ export default function BeanForm({ initial, onSave, onCancel }) {
       }
       setB(next);
       if (data.country) setOtherCountry(!isKnownCountry(data.country));
-      setScan({ state: 'done', msg: count ? `已从照片识别出 ${count} 项信息，请核对一下` : '照片里没有读到可用的信息，请手动填写' });
+      setScan({ state: 'done', msg: count ? `识别出 ${count} 项，核对一下` : '没读到信息' });
     } catch (err) {
       setScan({ state: 'error', msg: err.message });
     }
@@ -131,31 +132,20 @@ export default function BeanForm({ initial, onSave, onCancel }) {
     <form className="form" onSubmit={submit}>
       <header className="sheet-head">
         <button type="button" className="link" onClick={onCancel}>取消</button>
-        <h2>{isEdit ? '编辑豆子' : '新豆入仓'}</h2>
+        <h2>{isEdit ? '编辑' : '入仓'}</h2>
         <button type="submit" className="btn btn-primary" disabled={!b.name.trim()}>保存</button>
       </header>
 
       <div className="capture">
-        <label className={`capture-box ${photo ? 'has-photo' : ''}`}>
-          {photo ? (
-            <img src={photo} alt="豆袋照片" />
-          ) : (
-            <span className="capture-empty">
-              <IconCamera />
-              <b>拍豆袋</b>
-              <span className="muted small">可以一次选正面和背面</span>
-            </span>
-          )}
-          <input type="file" accept="image/*" multiple hidden onChange={onPhotos} />
-        </label>
+        <div className="capture-art"><BeanArt bean={b} /></div>
         <div className="capture-side">
-          {!photo && <p className="muted small">照片会作为封面。{hasKey ? '名称、产地、处理法、风味等会自动识别填好。' : ''}</p>}
+          <label className="btn btn-primary">
+            <IconCamera /> {photo ? '重拍' : '拍豆袋'}
+            <input type="file" accept="image/*" multiple hidden onChange={onPhotos} />
+          </label>
           {photo && (
-            <div className="row gap wrap">
-              <label className="link">
-                更换照片
-                <input type="file" accept="image/*" multiple hidden onChange={onPhotos} />
-              </label>
+            <div className="row gap-s">
+              <img className="capture-thumb" src={photo} alt="豆袋照片" />
               {hasKey && shots.length > 0 && scan.state !== 'loading' && (
                 <button type="button" className="link" onClick={() => runScan(shots)}>重新识别</button>
               )}
@@ -164,10 +154,7 @@ export default function BeanForm({ initial, onSave, onCancel }) {
           )}
           {scan.msg && <p className={`scan scan-${scan.state}`}>{scan.msg}</p>}
           {!hasKey && !showKey && (
-            <p className="muted small">
-              想拍照自动识别？
-              <button type="button" className="link inline" onClick={() => setShowKey(true)}>设置 API Key</button>
-            </p>
+            <button type="button" className="link" onClick={() => setShowKey(true)}>开启自动识别</button>
           )}
         </div>
       </div>

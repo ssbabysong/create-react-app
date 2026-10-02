@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { today, uid } from '../store.js';
-import { getPhoto, putPhoto } from '../photos.js';
-import { IconClose } from './Line.jsx';
-import { Cover, Stars, Status } from './BeanCard.jsx';
+import { freshness, today, uid } from '../store.js';
+import { usePhoto } from '../photos.js';
+import BeanArt from './Art.jsx';
+import { IconClose, IconCup, IconDrip, IconEdit, IconTrash } from './Line.jsx';
+import { Stars } from './BeanCard.jsx';
 
 const fmt = (iso) => {
   const d = new Date(iso);
@@ -12,111 +13,105 @@ const fmt = (iso) => {
 export default function BeanDetail({ bean, doses, onClose, onEdit, onDelete, onUse, onSave }) {
   const [grams, setGrams] = useState(doses[bean.usage === '意式' ? '意式' : '手冲']);
   const g = Number(grams) || 0;
+  const photo = usePhoto(bean.id, Boolean(bean.hasPhoto));
+  const f = freshness(bean);
+  const pct = bean.weight ? Math.min(100, (bean.remaining / bean.weight) * 100) : 0;
+
   const rows = [
-    ['产地', bean.country],
-    ['产区', bean.region],
-    ['庄园 / 处理站', bean.farm],
+    ['烘焙商', bean.roaster],
+    ['产地', [bean.country, bean.region].filter(Boolean).join(' · ')],
+    ['庄园', bean.farm],
     ['品种', bean.variety],
     ['处理法', bean.process],
     ['烘焙度', bean.roast],
-    ['烘焙商', bean.roaster],
-    ['用途', bean.usage],
     ['烘焙日', bean.roastDate],
-    ['余量', `${bean.remaining} / ${bean.weight} g`],
-    ['价格', bean.price !== '' && bean.price != null ? `¥${bean.price}` : ''],
-    ['每杯成本', bean.price && bean.weight ? `¥${((bean.price / bean.weight) * doses['手冲']).toFixed(1)}（${doses['手冲']}g）` : ''],
+    ['价格', bean.price ? `¥${bean.price}` : ''],
   ].filter(([, v]) => v);
 
-  const rebuy = async () => {
-    const id = uid();
-    if (bean.hasPhoto) await putPhoto(id, await getPhoto(bean.id));
+  const rebuy = () =>
     onSave({
       ...bean,
-      id,
+      id: uid(),
       createdAt: new Date().toISOString(),
       roastDate: today(),
       remaining: bean.weight,
       finished: false,
       log: [],
       rating: 0,
+      hasPhoto: false,
     });
-  };
 
   const step = (d) => setGrams((v) => Math.max(1, (Number(v) || 0) + d));
 
   return (
     <div className="detail">
-      <button className="icon-btn close" onClick={onClose} aria-label="关闭"><IconClose /></button>
-
-      <div className="detail-media">
-        <div className="detail-cover"><Cover bean={bean} /></div>
+      <div className="detail-bar">
+        <button className="icon-btn" onClick={onEdit} aria-label="编辑"><IconEdit /></button>
+        <button
+          className="icon-btn"
+          aria-label="删除"
+          onClick={() => confirm(`删除「${bean.name}」？`) && onDelete(bean.id)}
+        >
+          <IconTrash />
+        </button>
+        <button className="icon-btn" onClick={onClose} aria-label="关闭"><IconClose /></button>
       </div>
 
+      <div className="detail-art"><BeanArt bean={bean} /></div>
+
       <div className="detail-info">
-        <p className="eyebrow">{bean.roaster || '咖啡豆'}</p>
         <h1 className="detail-title">{bean.name}</h1>
-        <p className="muted">{[bean.variety, bean.process, bean.roast && `${bean.roast}烘`].filter(Boolean).join(' · ')}</p>
         <div className="row gap wrap">
-          <Status bean={bean} />
+          <span className="status"><i className={`dot dot-${f.key}`} />{f.label}</span>
           {bean.rating > 0 && <Stars value={bean.rating} />}
         </div>
 
         {bean.flavors?.length > 0 && (
           <div className="pills">
-            {bean.flavors.map((f) => <span key={f} className="pill">{f}</span>)}
+            {bean.flavors.map((x) => <span key={x} className="pill">{x}</span>)}
           </div>
         )}
 
+        <div className="stock" aria-label={`余量 ${bean.remaining} / ${bean.weight} 克`}>
+          <div className="stock-track"><div className="stock-fill" style={{ width: `${pct}%` }} /></div>
+          <span>{bean.remaining}g</span>
+        </div>
+
         {!bean.finished ? (
-          <div className="buy">
-            <label className="field-label" htmlFor="grams">称豆（克）</label>
+          <div className="brew">
             <div className="qty">
               <button type="button" onClick={() => step(-1)} aria-label="减少">−</button>
-              <input id="grams" type="number" inputMode="decimal" min="1" value={grams} onChange={(e) => setGrams(e.target.value)} />
+              <input type="number" inputMode="decimal" min="1" value={grams} onChange={(e) => setGrams(e.target.value)} aria-label="克数" />
               <button type="button" onClick={() => step(1)} aria-label="增加">+</button>
             </div>
-            <button className="btn btn-primary block" onClick={() => onUse(bean.id, g, '手冲')}>手冲 · 称 {g}g</button>
-            <button className="btn block" onClick={() => onUse(bean.id, g, '意式')}>意式 · 称 {g}g</button>
-            <button className="link" onClick={() => onSave({ ...bean, remaining: 0, finished: true })}>标记为已喝完</button>
+            <button className="brew-btn" onClick={() => onUse(bean.id, g, '手冲')}><IconDrip /><span>手冲</span></button>
+            <button className="brew-btn" onClick={() => onUse(bean.id, g, '意式')}><IconCup /><span>意式</span></button>
           </div>
         ) : (
-          <div className="buy">
-            <button className="btn btn-primary block" onClick={rebuy}>回购一包</button>
-          </div>
+          <button className="btn btn-primary" onClick={rebuy}>再来一包</button>
         )}
 
         {bean.comment && <p className="note">{bean.comment}</p>}
 
-        <dl className="specs">
-          {rows.map(([k, v]) => (
-            <div key={k}><dt>{k}</dt><dd>{v}</dd></div>
-          ))}
-        </dl>
-
-        {bean.log?.length > 0 && (
-          <details className="accordion" open={bean.log.length <= 5}>
-            <summary>使用记录（{bean.log.length} 次）</summary>
+        <details className="more">
+          <summary>详情</summary>
+          {photo && <img className="detail-photo" src={photo} alt="豆袋照片" />}
+          <dl className="specs">
+            {rows.map(([k, v]) => (
+              <div key={k}><dt>{k}</dt><dd>{v}</dd></div>
+            ))}
+          </dl>
+          {bean.log?.length > 0 && (
             <ul className="log">
               {bean.log.slice(0, 30).map((l, i) => (
-                <li key={l.date + i}>
-                  <span>{fmt(l.date)}</span>
-                  <span>{l.method}</span>
-                  <span>−{l.grams}g</span>
-                </li>
+                <li key={l.date + i}><span>{fmt(l.date)}</span><span>{l.method}</span><span>−{l.grams}g</span></li>
               ))}
             </ul>
-          </details>
-        )}
-
-        <div className="row gap">
-          <button className="link" onClick={onEdit}>编辑</button>
-          <button
-            className="link danger"
-            onClick={() => confirm(`确定从豆仓删除「${bean.name}」？图鉴记录也会一起移除。`) && onDelete(bean.id)}
-          >
-            删除
-          </button>
-        </div>
+          )}
+          {!bean.finished && (
+            <button className="link" onClick={() => onSave({ ...bean, remaining: 0, finished: true })}>标记喝完</button>
+          )}
+        </details>
       </div>
     </div>
   );

@@ -5,7 +5,9 @@ import Inventory from './components/Inventory.jsx';
 import Collection from './components/Collection.jsx';
 import BeanForm from './components/BeanForm.jsx';
 import BeanDetail from './components/BeanDetail.jsx';
-import { IconClose, IconPlus, IconSearch, Logo } from './components/Line.jsx';
+import Settings from './components/Settings.jsx';
+import { LogoMark } from './components/Art.jsx';
+import { IconClose, IconGlobe, IconGrid, IconPlus, IconSearch } from './components/Line.jsx';
 import { deletePhoto, putPhoto } from './photos.js';
 
 const PREFS_KEY = 'bean-vault:doses';
@@ -66,7 +68,7 @@ export default function App() {
     if (!bean || grams <= 0) return;
     use(id, grams, method);
     const left = Math.max(0, bean.remaining - grams);
-    setToast(left === 0 ? `「${bean.name}」已喝完` : `${method} −${grams}g · 还剩 ${+left.toFixed(1)}g`);
+    setToast(left === 0 ? '喝完了' : `−${grams}g · 剩 ${+left.toFixed(1)}g`);
   };
 
   const loadSamples = () => {
@@ -87,18 +89,18 @@ export default function App() {
     <div className="app">
       <header className="site-header">
         <div className="header-inner">
-          <button className="logo-btn" onClick={() => setTab('vault')} aria-label="回到豆仓">
-            <Logo />
+          <button className="logo-btn" onClick={() => setTab('vault')} aria-label="豆仓">
+            <LogoMark className="logo-mark" />
           </button>
           <nav className="nav">
-            <button className={tab === 'vault' ? 'on' : ''} onClick={() => setTab('vault')}>豆仓</button>
-            <button className={tab === 'dex' ? 'on' : ''} onClick={() => setTab('dex')}>图鉴</button>
+            <button className={tab === 'vault' ? 'on' : ''} onClick={() => setTab('vault')} aria-label="豆仓"><IconGrid /></button>
+            <button className={tab === 'dex' ? 'on' : ''} onClick={() => setTab('dex')} aria-label="图鉴"><IconGlobe /></button>
           </nav>
           <div className="header-icons">
             {tab === 'vault' && beans.length > 0 && (
               <button className="icon-btn" onClick={() => setSearching((v) => !v)} aria-label="搜索"><IconSearch /></button>
             )}
-            <button className="icon-btn" onClick={() => setSheet({ mode: 'add' })} aria-label="添加豆子"><IconPlus /></button>
+            <button className="add-btn" onClick={() => setSheet({ mode: 'add' })} aria-label="添加豆子"><IconPlus /></button>
           </div>
         </div>
         {searching && tab === 'vault' && (
@@ -106,7 +108,7 @@ export default function App() {
             <input
               autoFocus
               type="search"
-              placeholder="搜索名称、产地、品种、风味…"
+              placeholder="搜索"
               value={q}
               onChange={(e) => setQ(e.target.value)}
             />
@@ -129,11 +131,9 @@ export default function App() {
             onSample={loadSamples}
           />
         ) : (
-          <Collection beans={beans} setBeans={setBeans} doses={doses} setDoses={setDoses} />
+          <Collection beans={beans} onSettings={() => setSheet({ mode: 'settings' })} />
         )}
       </main>
-
-      <footer className="site-footer">豆仓 Bean Vault · 数据保存在本机</footer>
 
       {toast && <div className="toast">{toast}</div>}
 
@@ -146,7 +146,7 @@ export default function App() {
                 onSave={async (b, photo) => {
                   await saveBean(b, photo);
                   setSheet(null);
-                  setToast(`「${b.name}」已入仓`);
+                  setToast('已入仓');
                 }}
               />
             )}
@@ -159,6 +159,9 @@ export default function App() {
                   setSheet({ mode: 'view', id: b.id });
                 }}
               />
+            )}
+            {sheet.mode === 'settings' && (
+              <Settings beans={beans} setBeans={setBeans} doses={doses} setDoses={setDoses} onClose={() => setSheet(null)} />
             )}
             {sheet.mode === 'view' && current && (
               <BeanDetail
@@ -174,7 +177,7 @@ export default function App() {
                 onSave={(b) => {
                   upsert(b);
                   setSheet({ mode: 'view', id: b.id });
-                  if (b.id !== current.id) setToast('已回购，新的一包已入仓');
+                  if (b.id !== current.id) setToast('已入仓');
                 }}
               />
             )}
