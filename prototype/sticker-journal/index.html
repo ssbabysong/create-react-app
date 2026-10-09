@@ -1,7 +1,7 @@
 <title>贴贴本</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Long+Cang&family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;500;700&family=ZCOOL+KuaiLe&family=ZCOOL+XiaoWei&family=Zhi+Mang+Xing&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Homemade+Apple&family=Special+Elite&family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Long+Cang&family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;500;700&family=ZCOOL+KuaiLe&family=ZCOOL+XiaoWei&family=Zhi+Mang+Xing&display=swap" rel="stylesheet">
 <style>
 /* Layout: 顶部风格与方向切换 → 等比缩放的 iPad 交互原型（双页活页本） → 4 张 iPad 场景图 → 大屏设计要点与上架路线 */
 :root{
@@ -523,6 +523,50 @@ img.die{width:100%;height:auto;display:block;pointer-events:none}
 .wdonut::after{content:"";position:absolute;inset:29%;border-radius:50%;background:#efe3cc;box-shadow:inset 0 0 0 3px #d2b98f,inset 2px 3px 4px rgba(0,0,0,.35);z-index:2}
 .wtail{position:absolute;right:-13px;bottom:5px;width:26px;height:12px;transform:rotate(28deg);clip-path:polygon(0 0,100% 0,90% 33%,100% 66%,90% 100%,0 100%)!important;z-index:0}
 @media (prefers-reduced-motion:reduce){.corner.cR::before{animation:none}.item .inr{transition:none}}
+
+/* ===== PET collage tape ===== */
+.drawer.wide{width:410px}
+.pet{line-height:0;filter:drop-shadow(0 .6px .7px rgba(0,0,0,.2))}
+.pet svg{width:100%;height:auto;display:block;overflow:visible}
+.pghost .pet{width:100%;height:100%}
+.pet-desk{margin:0 -14px;padding:6px 14px 24px;display:grid;gap:4px;background-color:#ebe6de;border-radius:14px;
+  background-image:linear-gradient(115deg,rgba(255,255,255,.55) 0%,rgba(0,0,0,.035) 14%,rgba(255,255,255,.45) 24%,rgba(0,0,0,.04) 38%,rgba(255,255,255,.5) 52%,rgba(0,0,0,.03) 66%,rgba(255,255,255,.45) 80%,rgba(0,0,0,.04) 92%),linear-gradient(28deg,rgba(0,0,0,.03) 0%,rgba(255,255,255,.3) 30%,rgba(0,0,0,.025) 60%,rgba(255,255,255,.3) 90%),repeating-linear-gradient(0deg,rgba(0,0,0,.018) 0 1px,transparent 1px 3px),repeating-linear-gradient(90deg,rgba(0,0,0,.012) 0 1px,transparent 1px 3px);color:#3a3127}
+.pet-desk .rmeta span{color:#7d7163}
+.proll{display:grid;justify-items:center;gap:6px;padding:12px 0 8px}
+.proll+.proll{border-top:1px dashed rgba(60,40,20,.15)}
+.preel{border:0;background:none;padding:0;position:relative;width:310px;height:76px;transition:height .9s cubic-bezier(.3,.7,.2,1),transform .2s;z-index:2;cursor:pointer}
+.preel:hover{transform:translateY(-1px)}
+.proll.open .preel{height:58px}
+.pcyl{position:absolute;left:0;right:26px;top:0;bottom:0;border-radius:18px 4px 4px 18px/50% 4px 4px 50%;overflow:hidden;background:rgba(255,255,255,.42);box-shadow:inset 0 0 0 1px rgba(255,255,255,.7),0 10px 14px -10px rgba(0,0,0,.45)}
+.pcyl-pat{position:absolute;left:8px;right:8px;top:0;display:grid;grid-template-columns:repeat(3,1fr);gap:2px 10px;padding-top:2px;transition:transform .9s cubic-bezier(.3,.7,.2,1)}
+.pcyl-pat span{line-height:0;opacity:.95}
+.pcyl-pat svg{width:100%;height:auto;display:block}
+.proll.open .pcyl-pat{transform:translateY(-140px)}
+.pcyl::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.85) 0%,rgba(255,255,255,.25) 18%,rgba(255,255,255,0) 40%,rgba(0,0,0,.04) 68%,rgba(0,0,0,.26) 100%),linear-gradient(90deg,rgba(255,255,255,.35),rgba(255,255,255,0) 18%)}
+.pcap{position:absolute;right:0;top:0;bottom:0;width:40px;border-radius:50%;background:radial-gradient(ellipse at center,#e6e0d6 0 24%,#ffffff 25% 50%,#f1efea 51% 53%,rgba(255,255,255,.75) 54% 70%,rgba(255,255,255,.4) 71% 100%);box-shadow:inset 0 0 0 1px rgba(0,0,0,.08),3px 6px 8px -5px rgba(0,0,0,.35)}
+.pcap i{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(90deg);font-style:normal;font-size:6px;letter-spacing:.08em;color:#6b6156;white-space:nowrap;font-family:var(--f-num)}
+.pet-stripwrap{position:relative;width:292px;height:0;overflow:hidden;transition:height .9s cubic-bezier(.3,.7,.2,1),margin .3s;z-index:1}
+.proll.open .pet-stripwrap,.proll.moving .pet-stripwrap{margin-top:-34px}
+.pet-strip{position:absolute;left:2px;right:2px;bottom:0;background:linear-gradient(90deg,rgba(255,255,255,.85) 0 1.5px,rgba(255,255,255,.2) 1.5px calc(100% - 1.5px),rgba(255,255,255,.85) calc(100% - 1.5px)),linear-gradient(162deg,rgba(255,255,255,0) 20%,rgba(255,255,255,.35) 32%,rgba(255,255,255,0) 44%,rgba(255,255,255,0) 60%,rgba(255,255,255,.3) 70%,rgba(255,255,255,0) 80%);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.proll.open:not(.moving) .pet-strip{position:relative}
+.pet-end{position:absolute;left:0;right:0;bottom:0;height:22px;background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.55));border-radius:0 0 40% 40%/0 0 100% 100%}
+.pet-cell{position:absolute;width:150px}
+.pet-pk{border:0;background:none;padding:0;width:150px;display:block;position:relative;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.pet-art{display:block;line-height:0;transition:opacity .2s,transform .25s cubic-bezier(.3,.7,.2,1.3);filter:drop-shadow(0 .6px .6px rgba(0,0,0,.18))}
+.pet-art svg{width:100%;height:auto;display:block}
+.pet-pk:hover .pet-art{transform:translateY(-2px)}
+.pet-cut{position:absolute;inset:-4px;pointer-events:none;opacity:0;transition:opacity .2s}
+.pet-cut svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.pet-cut rect{fill:none;stroke:#3a3127;stroke-width:1.1;stroke-dasharray:1.1 .9;vector-effect:non-scaling-stroke}
+.pet-pk:hover .pet-cut{opacity:.4}
+.pet-pk.cutting .pet-cut{opacity:1}
+.pet-pk.cutting .pet-cut rect{stroke-dasharray:100 100;stroke-dashoffset:100;animation:cutline .34s linear forwards}
+@keyframes cutline{to{stroke-dashoffset:0}}
+.scis{position:absolute;left:0;top:0;width:20px;height:20px;margin:-10px 0 0 -10px;opacity:0;filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
+.scis svg{position:static;width:100%;height:100%}
+.pet-pk.taken .pet-art{opacity:0;transition:none}
+.pet-pk.taken .pet-cut{opacity:.45}
+.pet-pk.refill .pet-art{animation:refill .45s ease-out}
 </style>
 
 <div class="wrap">
@@ -576,6 +620,7 @@ img.die{width:100%;height:auto;display:block;pointer-events:none}
     </div>
     <ul class="howto">
       <li><b>翻页</b><span>按住右下角的页角往左拖，纸会跟着手指弯起来；拖过一半松手就翻过去，不够就弹回。点顶部的年、月、周、日或右侧索引贴也会翻页。</span></li>
+      <li><b>拼贴胶带</b><span>抽屉第一栏是 5 卷透明 PET 拼贴胶带。点一卷，会在铺布上展开一长条；按住喜欢的那一款，剪刀沿边剪一圈，拖到本子上。</span></li>
       <li><b>贴纸卷</b><span>抽屉「贴纸卷」里点一卷，它会边转边放出一条贴纸长条；再点一下卷回去。</span></li>
       <li><b>揭贴纸</b><span>按住长条上的贴纸，角先翘起来，拖出来就整张揭下，离型纸上留着它的印子。贴到本子上会压一下、轻轻回弹。</span></li>
       <li><b>拉胶带</b><span>「胶带」里点一卷进入胶带模式，在本子上按住拖出任意长度和角度，松手撕断。整卷拖到本子上也能直接贴一段。</span></li>
@@ -632,6 +677,7 @@ img.die{width:100%;height:auto;display:block;pointer-events:none}
         <table>
           <thead><tr><th>类别</th><th>首发内容</th><th>细节</th></tr></thead>
           <tbody>
+            <tr><td>PET 拼贴胶带</td><td>旧信笺、胶片旅行、雾蓝笔记、玫瑰拼贴、森林日记，每卷 6 款</td><td>透明底，印着撕纸、方格纸、打字机字、老照片、邮戳和金属圆钉；整款剪下来用</td></tr>
             <tr><td>和纸胶带</td><td>格纹、波点、斜条、方格布、牛皮纸、碎花、蕾丝、描图纸、烫金</td><td>半透明叠色，可改颜色和长度；两端是撕开的毛边</td></tr>
             <tr><td>贴纸</td><td>星星、爱心、小花、闪光、云、太阳、猫、咖啡、枝叶</td><td>统一白边模切，带轻微投影</td></tr>
             <tr><td>标签印章</td><td>吊牌、日期章、邮票、票根、便利贴、拍立得、对话气泡、勾选、箭头</td><td>日期章自动填当天日期</td></tr>
@@ -812,10 +858,10 @@ function seed(){return {
   'month-9':[mk({type:'tape',pat:'kraft',color:'#c8a27a',x:.36,y:.02,w:110,h:24,rot:4}),mk({type:'sticker',key:'persimmon',color:'#ec8a3c',x:.43,y:.94,w:46,rot:-8}),mk({type:'sticker',key:'maple',color:'#d9573f',x:.94,y:.06,w:44,rot:16}),mk({type:'sticker',key:'tag',color:'#6e8f69',x:.62,y:.94,w:86,rot:-6})],
   year:[mk({type:'tape',pat:'gold',color:'#d8b46a',x:.24,y:.015,w:140,h:26,rot:-2}),mk({type:'sticker',key:'sparkle',color:'#f2c14e',x:.44,y:.06,w:30,rot:0}),mk({type:'sticker',key:'stamp',color:'#7fa7c9',x:.93,y:.9,w:58,rot:8})]
 }}
-let state={style:'paper',orient:'land',view:'day',month:9,page:0,drawer:true,dtab:'roll',mcat:'全部',roll:'daily',sound:true,tpl:{L:'plan',R:'diary'},items:seed(),mine:[{cat:'咖啡馆',key:'croissant'},{cat:'咖啡馆',key:'latte'},{cat:'咖啡馆',key:'coffee'},{cat:'植物',key:'pot'},{cat:'植物',key:'ginkgo'},{cat:'票根收据',key:'ticket'},{cat:'猫猫',key:'cat'}]};
-try{const s=JSON.parse(localStorage.getItem('ttb-ipad-3')||'null');if(s&&s.items){Object.assign(state,s);uid=Math.max(uid,...Object.values(state.items).flat().map(i=>i.id+1))}}catch(e){}
+let state={style:'paper',orient:'land',view:'day',month:9,page:0,drawer:true,dtab:'pet',mcat:'全部',roll:'daily',pet:'letters',sound:true,tpl:{L:'plan',R:'diary'},items:seed(),mine:[{cat:'咖啡馆',key:'croissant'},{cat:'咖啡馆',key:'latte'},{cat:'咖啡馆',key:'coffee'},{cat:'植物',key:'pot'},{cat:'植物',key:'ginkgo'},{cat:'票根收据',key:'ticket'},{cat:'猫猫',key:'cat'}]};
+try{const s=JSON.parse(localStorage.getItem('ttb-ipad-4')||'null');if(s&&s.items){Object.assign(state,s);uid=Math.max(uid,...Object.values(state.items).flat().map(i=>i.id+1))}}catch(e){}
 let tapeMode=null;
-function save(){try{localStorage.setItem('ttb-ipad-3',JSON.stringify(state))}catch(e){}}
+function save(){try{localStorage.setItem('ttb-ipad-4',JSON.stringify(state))}catch(e){}}
 const key=()=>state.view==='month'?'month-'+state.month:state.view;
 function applyKey(k){if(k.startsWith('month-')){state.view='month';state.month=+k.slice(6)}else{state.view=k;state.month=9}}
 const ORDER=['year',...[0,1,2,3,4,5,6,7,8,9].map(m=>'month-'+m),'week','day','month-10','month-11'];
@@ -837,6 +883,7 @@ const SFX={
   tear(){const a=actx();if(!a)return;const t=a.currentTime;burst(a,t,.2,1800,.7,.035);for(let i=0;i<18;i++)burst(a,t+i*.011+Math.random()*.006,.014,1500+Math.random()*4500,3,.05+Math.random()*.04);buzz(8)},
   press(){const a=actx();if(!a)return;const t=a.currentTime,o=a.createOscillator();o.type='sine';o.frequency.setValueAtTime(170,t);o.frequency.exponentialRampToValueAtTime(70,t+.09);const g=a.createGain();g.gain.setValueAtTime(.1,t);g.gain.exponentialRampToValueAtTime(.0005,t+.12);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+.13);burst(a,t,.03,1600,1,.025);buzz(6)},
   roll(){const a=actx();if(!a)return;const t=a.currentTime;burst(a,t,.55,700,.6,.03,'lowpass');for(let i=0;i<7;i++)burst(a,t+.05+i*.07,.012,3200,4,.025)},
+  snip(){const a=actx();if(!a)return;const t=a.currentTime;burst(a,t,.025,5200,6,.07);burst(a,t+.11,.025,4600,6,.07);burst(a,t+.2,.03,3800,5,.06);burst(a,t+.05,.12,900,1,.02,'lowpass');buzz(4)},
   tick(){const a=actx();if(!a)return;burst(a,a.currentTime,.012,4200,5,.03)}
 };
 
@@ -886,6 +933,7 @@ function fitBook(instant){
   const i=ORDER.indexOf(key());
   $('#prevBtn').disabled=state.page===0&&i===0;$('#nextBtn').disabled=state.page===1&&i===ORDER.length-1;
 }
+function fitDuring(ms){if(RM){fitAll();return}const t0=performance.now();const st=n=>{fitBook(true);if(n-t0<ms)requestAnimationFrame(st)};requestAnimationFrame(st)}
 function layout(){
   mainDev.className='dev '+state.orient;
   $('#scr').classList.toggle('port',state.orient==='port');
@@ -1020,6 +1068,7 @@ function inner(it){
   let c;
   if(it.type==='sticker')c=`<div class="die">${svg(ST[it.key](it.color))}</div>`;
   else if(it.type==='tape')c=`<span class="tape tp-${it.pat}" style="--c:${it.color};width:100%;height:${Math.round(it.h||Math.max(14,it.w/4.6))}px"></span>`;
+  else if(it.type==='collage')c=`<div class="pet">${motif(it.roll,it.idx)}</div>`;
   else if(it.type==='photo')c=`<img class="die" src="${it.src}" alt="${esc(it.cat||'照片')}贴纸" draggable="false">`;
   else c=`<div class="txt" style="font-family:${it.font};color:${it.color};font-size:${it.fs}px">${esc(it.text)}</div>`;
   return `<div class="inr">${c}</div>`;
@@ -1096,7 +1145,7 @@ function renderToolbar(){
   const size=it.type==='text'?`<label class="rng">字号<input type="range" id="rSize" min="10" max="90" value="${it.fs}"><output id="oSize">${it.fs}</output></label>`:`<label class="rng">${it.type==='tape'?'长度':'大小'}<input type="range" id="rSize" min="16" max="420" value="${it.w}"><output id="oSize">${it.w}</output></label>`;
   const extra=it.type==='text'?`<div class="trow"><input class="tin" id="tText" type="text" value="${esc(it.text)}" aria-label="文字内容"><div class="fonts">${FONTS.map(([n,f])=>`<button type="button" data-f="${f}" style="font-family:${f}" aria-pressed="${f===it.font}">${n}</button>`).join('')}</div></div>`
     :it.type==='tape'?`<div class="trow"><span class="hint" style="padding:0 4px">花纹</span><div class="pats">${PATS.map(p=>`<button type="button" data-pat="${p}" aria-pressed="${p===it.pat}" aria-label="${PATN[p]}">${tape(p,it.color,46,18)}</button>`).join('')}</div></div>`:'';
-  const color=it.type==='photo'?'':`<span class="tsep"></span><div class="sw">${SWC.map(c=>`<button type="button" data-c="${c}" style="background:${c}" aria-label="颜色" aria-pressed="${c===it.color}"></button>`).join('')}</div>`;
+  const color=(it.type==='photo'||it.type==='collage')?'':`<span class="tsep"></span><div class="sw">${SWC.map(c=>`<button type="button" data-c="${c}" style="background:${c}" aria-label="颜色" aria-pressed="${c===it.color}"></button>`).join('')}</div>`;
   tb.innerHTML=`${extra}<div class="trow"><label class="rng">角度<input type="range" id="rRot" min="-180" max="180" value="${it.rot}"><output id="oRot">${it.rot}°</output></label>${size}${color}<span class="tsep"></span>
     <button class="tbtn" type="button" data-a="up" aria-label="上移一层">${ic('up')}</button><button class="tbtn" type="button" data-a="down" aria-label="下移一层">${ic('down')}</button><button class="tbtn" type="button" data-a="dup" aria-label="复制">${ic('dup')}</button><button class="tbtn del" type="button" data-a="del" aria-label="揭掉">${ic('trash')}</button><button class="tbtn pri" type="button" data-a="done">完成</button></div>`;
 }
@@ -1136,7 +1185,7 @@ $('#shareBtn').onclick=()=>{closePop();const t=document.createElement('div');t.c
 
 /* ---------- drawer ---------- */
 const CATS=['咖啡馆','植物','票根收据','猫猫','未分类'];
-const DTABS=[['roll','贴纸卷'],['tape','胶带'],['mine','我的收集'],['text','文字']];
+const DTABS=[['pet','拼贴胶带'],['roll','贴纸卷'],['tape','和纸胶带'],['mine','收集'],['text','文字']];
 const ROLLS=[
   {id:'daily',name:'日常小物',sub:'咖啡、面包、植物和猫',keys:['coffee','croissant','star','pot','heart','cat','flower','leaf','sparkle']},
   {id:'autumn',name:'秋日限定',sub:'银杏、枫叶、柿子和热饮',keys:['ginkgo','maple','persimmon','latte','ginkgo','leaf']},
@@ -1161,6 +1210,7 @@ function rollHTML(r){
 function renderDrawer(){
   dreg=[];const t=state.dtab;let body='';
   if(t==='roll')body=ROLLS.map(rollHTML).join('');
+  else if(t==='pet')body=`<p class="dr-tip">透明的 PET 拼贴胶带。点一卷在铺布上展开，按住喜欢的那一款，剪刀会沿边剪下来，拖到本子上。</p><div class="pet-desk">${PET.map(petRollHTML).join('')}</div>`;
   else if(t==='tape')body=`<p class="dr-tip">点一卷进入胶带模式，在本子上按住拖出一段；也可以把整卷拖到本子上。</p><div class="wgrid">${PATS.map(p=>`<button class="wroll" type="button" data-wroll="${p}" aria-pressed="${!!tapeMode&&tapeMode.pat===p}"><span class="wdonut" style="--c:${TAPEC[p]}"><span class="tape tp-${p}" style="--c:${TAPEC[p]}"></span><span class="wtail tape tp-${p}" style="--c:${TAPEC[p]}"></span></span><span>${PATN[p]}</span></button>`).join('')}</div>`;
   else if(t==='mine'){
     const l=state.mine.filter(m=>state.mcat==='全部'||m.cat===state.mcat);
@@ -1171,8 +1221,112 @@ function renderDrawer(){
   $('#drawer').innerHTML=`<div class="dr-head"><div class="dr-title"><b>贴纸</b><span>已收集 ${85+state.mine.length-7} 张</span></div><div class="search">${ic('search')}搜索贴纸、标签</div>
     <div class="dtabs">${DTABS.map(([k,n])=>`<button type="button" data-dt="${k}" aria-pressed="${k===t}">${n}</button>`).join('')}</div></div><div class="dr-body">${body}</div>`;
   if(t==='roll'){const o=drawer.querySelector('.roll.open .dr-stripwrap');if(o)o.style.height='auto'}
+  if(t==='pet'){const o=drawer.querySelector('.proll.open .pet-stripwrap');if(o)o.style.height=PSTRIP_H+'px'}
+  const wide=t==='pet';if(drawer.classList.contains('wide')!==wide){drawer.classList.toggle('wide',wide);fitDuring(480)}
 }
 const drawer=$('#drawer');
+/* ---------- PET collage tape: wide clear rolls printed with layered ephemera ---------- */
+function rng(seed){let a=seed>>>0;return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const hashStr=s=>{let h=2166136261;for(const ch of s)h=Math.imul(h^ch.charCodeAt(0),16777619);return h>>>0};
+const TYPEF="'Special Elite','Courier New',monospace",SCRIPTF="'Caveat',cursive",PENF="'Homemade Apple','Caveat',cursive";
+const PET=[
+  {id:'letters',name:'旧信笺',sub:'牛皮纸、打字机字和邮戳',p:['#d6bf9b','#efe4cf','#b49e80'],accent:'#9b3b2e',ink:'#2b2520',gridc:'rgba(90,110,140,.35)',tape2:'#7da0a0',tone:['#3a3027','#8f7a60','#e2d2b6'],sky:['#e9dcc3','#b9a283'],photos:['field','sea','moon'],
+    type:['Slow days','are still','good days.','Keep the','little things','close.'],script:['enjoy\nevery\nmoment','the sun\ncame up\ntoday'],small:['dear you, write back soon','no. 0921 / airmail','keep the little things'],pen:['Correspondance','my dear friend,','the leaves turned gold','this week. write soon.']},
+  {id:'film',name:'胶片旅行',sub:'风景照、票根和温度标签',p:['#c7b498','#f1ebe0','#7f97a6'],accent:'#c1492f',ink:'#1f1f1f',gridc:'rgba(60,80,100,.32)',tape2:'#e3b65c',tone:['#262b2f','#6f7c84','#d5dcdf'],sky:['#dfe5e6','#9aa9b1'],photos:['mountains','palm','forest'],
+    type:['Somewhere','between','here and','there, the','light was','perfect.'],script:['wander\nmore','postcards\nfrom\nnowhere'],small:['roll 03 / iso 400','frame 24 / summer','not all who wander'],pen:['Travel notes','day four, by the sea,','we missed the last bus','and walked home.']},
+  {id:'blue',name:'雾蓝笔记',sub:'方格纸、黑白照和蓝色标签',p:['#a3b4c3','#e9eef1','#5d7486'],accent:'#2f4a63',ink:'#1c232b',gridc:'rgba(60,90,130,.35)',tape2:'#c9d6dd',tone:['#1d252c','#5f7180','#c9d4dc'],sky:['#d7dfe5','#8a9daa'],photos:['sea','moon','mountains'],
+    type:['Quiet','mornings,','cold coffee,','a page','of my','own.'],script:['memories\nstay','blue\nhour'],small:['memories / vol. 2','forget me not','hold on to this'],pen:['Memories','some days are soft','and that is enough.','with love, M.']},
+  {id:'rose',name:'玫瑰拼贴',sub:'豆沙粉撕纸和波点',p:['#d9b3a6','#ecd8cd','#c7928d'],accent:'#8f3b47',ink:'#3a2526',gridc:'rgba(140,80,90,.3)',tape2:'#6fa3a0',tone:['#3d2a2a','#9c7468','#ecd3c8'],sky:['#f0dcd2','#c39f92'],photos:['field','forest','sea'],
+    type:['Bloom','where','you are','planted,','slowly and','softly.'],script:['i decide\nmy vibe','soft\ndays'],small:['i swear i will love you more','i decide my vibe','petal post / 07'],pen:['Mon amie','the roses are out','again and i thought','of you today.']},
+  {id:'forest',name:'森林日记',sub:'苔绿、植物标本和野外笔记',p:['#a9b59a','#e7e8d8','#6f7d5f'],accent:'#a5662d',ink:'#22281d',gridc:'rgba(80,100,70,.32)',tape2:'#d6a240',tone:['#232b1d','#66745a','#d5dcc4'],sky:['#e1e6d6','#9fab8f'],photos:['forest','mountains','field'],
+    type:['Moss,','ferns and','a long','walk after','the rain.',''],script:['into the\nwoods','breathe\nslowly'],small:['field notes / no. 12','specimen: fern','walk slowly'],pen:['Field notes','found three acorns','and one quiet hour','near the lake.']}
+];
+function tornPts(r,x,y,w,h,j,st,e){const P=[],J=on=>on?(r()*2-1)*j:0;
+  for(let i=0;i<=w;i+=st)P.push([x+i,y+J(e.includes('t'))]);for(let i=st;i<=h;i+=st)P.push([x+w+J(e.includes('r')),y+i]);
+  for(let i=w-st;i>=0;i-=st)P.push([x+i,y+h+J(e.includes('b'))]);for(let i=h-st;i>0;i-=st)P.push([x+J(e.includes('l')),y+i]);
+  return P.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}
+function gridL(x,y,w,h,c){let s=`<g stroke="${c}" stroke-width=".45">`;for(let i=x+7;i<x+w-2;i+=7)s+=`<line x1="${i}" y1="${y+2}" x2="${i}" y2="${y+h-2}"/>`;for(let i=y+7;i<y+h-2;i+=7)s+=`<line x1="${x+2}" y1="${i}" x2="${x+w-2}" y2="${i}"/>`;return s+'</g>'}
+function ruleL(x,y,w,h,c,m){let s=`<g stroke="${c}" stroke-width=".5">`;for(let i=y+14;i<y+h-3;i+=9)s+=`<line x1="${x+3}" y1="${i}" x2="${x+w-3}" y2="${i}"/>`;s+='</g>';if(m)s+=`<line x1="${x+14}" y1="${y+2}" x2="${x+14}" y2="${y+h-2}" stroke="${m}" stroke-width=".6"/>`;return s}
+function dotsL(x,y,w,h,c){let s=`<g fill="${c}">`;for(let yy=y+8,row=0;yy<y+h-4;yy+=12,row++)for(let xx=x+6+(row%2)*6;xx<x+w-4;xx+=12)s+=`<circle cx="${xx}" cy="${yy}" r="3.1"/>`;return s+'</g>'}
+function paper(r,x,y,w,h,fill,o={}){
+  const j=o.jag!=null?o.jag:2,e=o.e||'tblr';let s=`<g transform="rotate(${o.rot||0} ${x+w/2} ${y+h/2})"${o.op!=null?` opacity="${o.op}"`:''}>`;
+  if(o.fiber)s+=`<polygon points="${tornPts(r,x-1.3,y-1.3,w+2.6,h+2.6,j+.9,5,e)}" fill="#faf6ee"/>`;
+  s+=`<polygon points="${tornPts(r,x,y,w,h,j,6,e)}" fill="${fill}"/>`;
+  if(o.grid)s+=gridL(x,y,w,h,o.grid);if(o.lines)s+=ruleL(x,y,w,h,o.lines,o.margin);if(o.dots)s+=dotsL(x,y,w,h,o.dots);if(o.inner)s+=o.inner;
+  return s+'</g>'}
+function txt(x,y,lines,o={}){const sz=o.size||9,lh=o.lh||sz*1.3;return `<text x="${x}" y="${y}" font-family="${o.font||TYPEF}" font-size="${sz}" fill="${o.color||'#2a2520'}"${o.anchor?` text-anchor="${o.anchor}"`:''}${o.ls?` letter-spacing="${o.ls}"`:''}${o.rot?` transform="rotate(${o.rot} ${x} ${y})"`:''}${o.weight?` font-weight="${o.weight}"`:''}>${lines.map((l,i)=>`<tspan x="${x}" dy="${i?lh:0}">${l}</tspan>`).join('')}</text>`}
+function photo(r,x,y,w,h,kind,t,o={}){
+  const b=o.border||0,[D,M,L]=t.tone,ix=x+b,iy=y+b,iw=w-2*b,ih=h-2*b-(o.bottom||0),B=iy+ih,R=ix+iw,f=n=>n.toFixed(1);
+  let s=`<g transform="rotate(${o.rot||0} ${x+w/2} ${y+h/2})">`;
+  if(b)s+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f7f4ee"/>`;
+  s+=`<rect x="${ix}" y="${iy}" width="${iw}" height="${ih}" fill="url(#psky-${t.id})"/>`;
+  if(kind==='mountains'){s+=`<polygon points="${ix},${f(B-ih*.35)} ${f(ix+iw*.25)},${f(iy+ih*.3)} ${f(ix+iw*.45)},${f(B-ih*.45)} ${f(ix+iw*.72)},${f(iy+ih*.18)} ${R},${f(B-ih*.42)} ${R},${B} ${ix},${B}" fill="${M}"/><polygon points="${ix},${f(B-ih*.18)} ${f(ix+iw*.3)},${f(B-ih*.34)} ${f(ix+iw*.6)},${f(B-ih*.14)} ${R},${f(B-ih*.3)} ${R},${B} ${ix},${B}" fill="${D}"/><polygon points="${f(ix+iw*.66)},${f(iy+ih*.26)} ${f(ix+iw*.72)},${f(iy+ih*.18)} ${f(ix+iw*.78)},${f(iy+ih*.27)}" fill="${L}" opacity=".8"/>`}
+  else if(kind==='sea'){s+=`<circle cx="${f(ix+iw*.68)}" cy="${f(iy+ih*.36)}" r="${f(ih*.11)}" fill="${L}"/><rect x="${ix}" y="${f(iy+ih*.56)}" width="${iw}" height="${f(ih*.44)}" fill="${M}"/>`;for(let k=0;k<6;k++){const yy=iy+ih*(.62+k*.06),x1=ix+iw*(.15+r()*.3);s+=`<line x1="${f(x1)}" y1="${f(yy)}" x2="${f(Math.min(R-2,x1+iw*(.2+r()*.3)))}" y2="${f(yy)}" stroke="${L}" stroke-width=".8" opacity=".5"/>`}s+=`<rect x="${ix}" y="${f(B-ih*.12)}" width="${iw}" height="${f(ih*.12)}" fill="${D}" opacity=".7"/>`}
+  else if(kind==='forest'){s+=`<rect x="${ix}" y="${f(B-ih*.16)}" width="${iw}" height="${f(ih*.16)}" fill="${D}"/>`;for(let k=0;k<13;k++){const tx=ix+3+r()*(iw-6),hw=Math.min(iw*.07,tx-ix,R-tx),th=ih*(.3+r()*.42);s+=`<polygon points="${f(tx)},${f(B-th)} ${f(tx+hw)},${f(B-ih*.1)} ${f(tx-hw)},${f(B-ih*.1)}" fill="${k%3?D:M}"/>`}}
+  else if(kind==='field'){s+=`<polygon points="${ix},${f(B-ih*.38)} ${f(ix+iw*.5)},${f(B-ih*.45)} ${R},${f(B-ih*.36)} ${R},${B} ${ix},${B}" fill="${M}"/><polygon points="${ix},${f(B-ih*.2)} ${R},${f(B-ih*.26)} ${R},${B} ${ix},${B}" fill="${D}"/><rect x="${f(ix+iw*.62)}" y="${f(B-ih*.52)}" width="${f(iw*.12)}" height="${f(ih*.1)}" fill="${D}"/><polygon points="${f(ix+iw*.6)},${f(B-ih*.52)} ${f(ix+iw*.68)},${f(B-ih*.6)} ${f(ix+iw*.76)},${f(B-ih*.52)}" fill="${D}"/>`}
+  else if(kind==='moon'){s+=`<rect x="${ix}" y="${iy}" width="${iw}" height="${ih}" fill="${D}" opacity=".88"/><circle cx="${f(ix+iw*.35)}" cy="${f(iy+ih*.35)}" r="${f(ih*.13)}" fill="${L}"/>`;for(let k=0;k<9;k++)s+=`<circle cx="${f(ix+3+r()*(iw-6))}" cy="${f(iy+3+r()*(ih*.7))}" r=".7" fill="${L}"/>`;s+=`<polygon points="${ix},${B} ${ix},${f(B-ih*.18)} ${f(ix+iw*.4)},${f(B-ih*.28)} ${R},${f(B-ih*.14)} ${R},${B}" fill="#000" opacity=".5"/>`}
+  else if(kind==='palm'){s+=`<rect x="${ix}" y="${f(iy+ih*.62)}" width="${iw}" height="${f(ih*.38)}" fill="${M}"/><path d="M${f(ix+iw*.3)} ${B} Q${f(ix+iw*.36)} ${f(iy+ih*.55)} ${f(ix+iw*.5)} ${f(iy+ih*.26)}" stroke="${D}" stroke-width="2.4" fill="none"/>`;[[-.22,.02],[-.12,.16],[.16,.12],[.2,-.02],[.02,-.12]].forEach(([dx,dy])=>{s+=`<path d="M${f(ix+iw*.5)} ${f(iy+ih*.26)} q${f(iw*dx*.6)} ${f(ih*(dy-.08))} ${f(iw*dx)} ${f(ih*(dy+.06))}" stroke="${D}" stroke-width="2" fill="none" stroke-linecap="round"/>`})}
+  s+=`<rect x="${ix}" y="${iy}" width="${iw}" height="${ih}" fill="#000" filter="url(#pgrain)" opacity=".22"/>`;
+  return s+'</g>'}
+const brad=(cx,cy,rr,gold)=>`<circle cx="${cx}" cy="${cy}" r="${rr}" fill="url(#${gold?'pgold':'psilver'})"/><circle cx="${(cx-rr*.3).toFixed(1)}" cy="${(cy-rr*.35).toFixed(1)}" r="${(rr*.28).toFixed(1)}" fill="#fff" opacity=".6"/>`;
+const tapeBit=(x,y,w,h,c,rot,op)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}" opacity="${op||.6}" transform="rotate(${rot} ${x+w/2} ${y+h/2})"/>`;
+const sparkle=(cx,cy,s,c)=>`<path d="M${cx} ${cy-s}Q${cx+s*.16} ${cy-s*.16} ${cx+s} ${cy}Q${cx+s*.16} ${cy+s*.16} ${cx} ${cy+s}Q${cx-s*.16} ${cy+s*.16} ${cx-s} ${cy}Q${cx-s*.16} ${cy-s*.16} ${cx} ${cy-s}Z" fill="${c}"/>`;
+function starO(cx,cy,s,c){let d='';for(let i=0;i<=10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?s*.42:s;d+=(i?'L':'M')+(cx+Math.cos(a)*rr).toFixed(1)+' '+(cy+Math.sin(a)*rr).toFixed(1)}return `<path d="${d}" fill="none" stroke="${c}" stroke-width="1.3" stroke-linejoin="round"/>`}
+function scribble(r,x,y,w,h,c){let d=`M${x} ${y+h/2}`;for(let i=1;i<=16;i++)d+=` L${(x+i*w/16+(r()-.5)*3).toFixed(1)} ${(i%2?y+r()*h*.3:y+h-r()*h*.3).toFixed(1)}`;return `<path d="${d}" fill="none" stroke="${c}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>`}
+const postmark=(cx,cy,rr,c,lab)=>`<g fill="none" stroke="${c}" opacity=".55"><circle cx="${cx}" cy="${cy}" r="${rr}" stroke-width="1.2"/><circle cx="${cx}" cy="${cy}" r="${rr-4}" stroke-width=".6"/>${[0,1,2,3].map(i=>`<path d="M${cx+rr+2} ${cy-6+i*4} q5 -3 10 0 t10 0" stroke-width=".9"/>`).join('')}</g>`+txt(cx,cy+3,[lab],{size:7,color:c,anchor:'middle'}).replace('<text','<text opacity=".6"');
+const RECIPES=[
+  (t,r)=>paper(r,14,20,112,150,t.p[0],{rot:-4,fiber:1})+paper(r,62,34,100,158,'#fbfbf7',{rot:3,grid:t.gridc,jag:1.6})+tapeBit(30,10,46,13,t.p[2],-9,.55)
+    +paper(r,22,74,104,92,t.p[1],{rot:-1,jag:1.1,inner:txt(30,92,t.type.slice(0,6),{size:9.6,lh:12.4,color:t.ink})})+brad(118,52,6.5,true)+sparkle(98,64,9,t.ink)+starO(148,184,13,t.ink),
+  (t,r)=>paper(r,20,40,138,160,t.p[2],{rot:4,fiber:1,op:.95})+tapeBit(22,18,40,12,t.accent,-28,.5)+photo(r,30,22,118,112,t.photos[0],t,{border:7,rot:-3})+tapeBit(124,16,40,12,t.accent,24,.5)
+    +paper(r,44,142,112,44,'#f5f0e6',{rot:1,jag:1,lines:'rgba(0,0,0,.12)',inner:txt(50,157,[t.small[0]],{size:7.2,color:t.ink})+txt(50,172,[t.small[1]],{size:7.2,color:'#6b6156'})})
+    +postmark(142,132,17,t.ink,'2026')+`<rect x="14" y="176" width="32" height="18" fill="${t.ink}"/>`+txt(30,189,['18°'],{size:10,color:'#f6f1e7',anchor:'middle'}),
+  (t,r)=>paper(r,52,16,112,186,t.p[0],{rot:4,fiber:1})+paper(r,26,36,104,170,t.p[1],{rot:-3,fiber:1})+paper(r,34,72,90,110,t.p[2],{rot:-1,jag:1.3,dots:t.accent})
+    +paper(r,38,28,96,40,'#f6f1e6',{rot:-2,jag:.8,lines:'rgba(0,0,0,.14)',inner:txt(44,40,[t.small[2]],{size:6.6,color:t.ink})})+tapeBit(52,20,22,10,t.tape2,-14,.8)+tapeBit(78,12,10,20,t.tape2,8,.7)
+    +paper(r,136,108,20,86,'#ebe1d0',{jag:.6,inner:txt(143,114,[t.small[1]],{size:7,rot:90,color:t.ink})}),
+  (t,r)=>paper(r,18,40,118,118,'#fbfbf7',{rot:-3,grid:t.gridc,jag:1.2})+scribble(r,22,12,44,24,t.ink)+photo(r,66,86,96,66,t.photos[1],t,{rot:2})+brad(124,60,6,true)
+    +txt(26,72,t.script[0].split('\n'),{font:SCRIPTF,size:28,lh:23,color:t.accent,rot:-8,weight:700})
+    +paper(r,8,176,150,15,'#f8f5ee',{jag:.5,inner:txt(14,187,[t.small[0].toUpperCase()],{size:6.6,ls:.6,color:t.ink})})+starO(156,160,13,t.ink)+sparkle(30,162,7,t.ink),
+  (t,r)=>paper(r,12,30,156,128,'#fbfaf4',{rot:-1.5,jag:.9,lines:'rgba(70,90,130,.25)',margin:'rgba(190,60,60,.35)',inner:txt(30,50,[t.pen[0]],{font:PENF,size:11,color:t.ink})+txt(32,77,t.pen.slice(1),{font:PENF,size:7.6,lh:15,color:t.ink})})
+    +photo(r,112,104,50,64,t.photos[2],t,{rot:3})+paper(r,98,138,15,48,t.p[2],{jag:.4})+brad(34,150,7.5,false)+sparkle(150,40,6,t.accent),
+  (t,r)=>photo(r,18,12,118,172,t.photos[0],t,{border:8,bottom:46,rot:-2})+txt(28,150,t.type.filter(Boolean).slice(0,4),{size:6,lh:7.6,color:'#6a6158',rot:-2})
+    +txt(134,118,t.script[1].split('\n'),{font:SCRIPTF,size:16,lh:15,color:t.ink,rot:4})+brad(116,26,5.5,true)+scribble(r,132,182,36,10,t.ink)+tapeBit(6,150,28,9,t.ink,-20,.85)
+];
+const MCACHE={};
+function motif(rid,i){const k=rid+'-'+i;if(MCACHE[k])return MCACHE[k];const t=PET.find(x=>x.id===rid)||PET[0];return MCACHE[k]=`<svg viewBox="0 0 180 220" aria-hidden="true">${RECIPES[i%6](t,rng(hashStr(k)))}</svg>`}
+(function petDefs(){const d=document.createElement('div');d.setAttribute('aria-hidden','true');d.style.cssText='position:absolute;width:0;height:0;overflow:hidden';
+  d.innerHTML=`<svg width="0" height="0"><defs><radialGradient id="pgold" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#fff3c4"/><stop offset=".45" stop-color="#d9ad4f"/><stop offset="1" stop-color="#8a6420"/></radialGradient><radialGradient id="psilver" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#b8bcc0"/><stop offset="1" stop-color="#6c7176"/></radialGradient>
+  <filter id="pgrain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".95" numOctaves="2" seed="4"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.6 -.5"/><feComposite in2="SourceGraphic" operator="in"/></filter>
+  ${PET.map(t=>`<linearGradient id="psky-${t.id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${t.sky[0]}"/><stop offset="1" stop-color="${t.sky[1]}"/></linearGradient>`).join('')}</defs></svg>`;
+  document.body.appendChild(d)})();
+const PCELL_DY=112,PSTRIP_H=12+5*PCELL_DY+196;
+const scis='<svg viewBox="0 0 24 24" fill="none" stroke="#2b2520" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M8.6 7.6L20 18M8.6 16.4L20 6"/></svg>';
+function petRollHTML(t){
+  const open=state.pet===t.id;
+  const cells=[0,1,2,3,4,5].map(i=>`<div class="pet-cell" style="left:${i%2?128:4}px;top:${12+i*PCELL_DY}px"><button class="pet-pk" type="button" data-add="${reg({type:'collage',roll:t.id,idx:i,w:150})}" aria-label="剪下${t.name}第 ${i+1} 款"><span class="pet-art">${motif(t.id,i)}</span><span class="pet-cut"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="0" y="0" width="100" height="100" rx="2" pathLength="100"/></svg><span class="scis">${scis}</span></span></button></div>`).join('');
+  return `<div class="proll ${open?'open':''}" data-proll="${t.id}">
+    <div class="rmeta"><b>${t.name}</b><span>6 款 · ${t.sub}</span></div>
+    <button class="preel" type="button" data-preel="${t.id}" aria-expanded="${open}" aria-label="${t.name}，${open?'卷起':'展开'}">
+      <span class="pcyl"><span class="pcyl-pat">${[0,1,2,3,4,5,0,1,2].map(i=>`<span>${motif(t.id,i)}</span>`).join('')}</span></span><span class="pcap"><i>PET · 6cm</i></span>
+    </button>
+    <div class="pet-stripwrap"><div class="pet-strip" style="height:${PSTRIP_H}px">${cells}<div class="pet-end"></div></div></div>
+  </div>`;
+}
+function togglePet(id){
+  const prev=state.pet;state.pet=prev===id?null:id;save();SFX.roll();
+  drawer.querySelectorAll('.proll').forEach(r=>{
+    const open=r.dataset.proll===state.pet,was=r.classList.contains('open'),w=r.querySelector('.pet-stripwrap');if(open===was)return;
+    r.querySelector('.preel').setAttribute('aria-expanded',open);
+    if(open){w.style.height='0px';r.classList.add('open','moving');void w.offsetHeight;w.style.height=PSTRIP_H+'px';const body=drawer.querySelector('.dr-body');setTimeout(()=>body.scrollTo({top:r.offsetTop-4,behavior:RM?'auto':'smooth'}),prev&&prev!==id?400:0);setTimeout(()=>r.classList.remove('moving'),RM?0:920)}
+    else{w.style.height=PSTRIP_H+'px';r.classList.add('moving');void w.offsetHeight;r.classList.remove('open');w.style.height='0px';setTimeout(()=>r.classList.remove('moving'),RM?0:920)}
+  });
+}
+function cutAnim(b,done){
+  const cut=b.querySelector('.pet-cut'),sc=b.querySelector('.scis');b.classList.add('cutting');SFX.snip();
+  const W=cut.offsetWidth,H=cut.offsetHeight;
+  if(!RM&&sc.animate)sc.animate([{left:'0px',top:'0px',opacity:1,transform:'rotate(0deg)'},{left:W+'px',top:'0px',opacity:1,transform:'rotate(0deg)'},{left:W+'px',top:H+'px',opacity:1,transform:'rotate(90deg)'},{left:'0px',top:H+'px',opacity:1,transform:'rotate(180deg)'},{left:'0px',top:'0px',opacity:0,transform:'rotate(270deg)'}],{duration:340,easing:'linear'});
+  setTimeout(()=>{b.classList.remove('cutting');done()},RM?0:340);
+}
+
 function toggleRoll(id){
   const prev=state.roll;state.roll=prev===id?null:id;save();SFX.roll();
   drawer.querySelectorAll('.roll').forEach(r=>{
@@ -1190,6 +1344,7 @@ drawer.addEventListener('click',e=>{
   if(b.dataset.dt){state.dtab=b.dataset.dt;renderDrawer();save();SFX.tick();return}
   if(b.dataset.mc){state.mcat=b.dataset.mc;renderDrawer();save();return}
   if(b.dataset.reel){toggleRoll(b.dataset.reel);return}
+  if(b.dataset.preel){togglePet(b.dataset.preel);return}
   if(b.id==='camCta'){$('#fileIn').click()}
 });
 
@@ -1213,12 +1368,12 @@ drawer.addEventListener('pointerdown',e=>{
   const b=e.target.closest('[data-add],[data-wroll]');if(!b||flipping)return;
   e.preventDefault();b.setPointerCapture(e.pointerId);
   if(b.dataset.wroll){dd={kind:'roll',b,pat:b.dataset.wroll,x0:e.clientX,y0:e.clientY};return}
-  const o=dreg[+b.dataset.add],art=b.querySelector('.dr-stk')||b,rr=art.getBoundingClientRect();
-  const peelable=o.type!=='text';
-  const gh=makeGhost(o.type==='text'?`<div class="txt" style="font-family:${o.font};color:${o.color};font-size:${o.fs}px">${esc(o.text)}</div>`:`<div class="die">${art.innerHTML}</div>`,rr.width,rr.height,peelable);
+  const o=dreg[+b.dataset.add],art=b.querySelector('.dr-stk')||b.querySelector('.pet-art')||b,rr=art.getBoundingClientRect();
+  const peelable=o.type!=='text'&&o.type!=='collage';
+  const gh=makeGhost(o.type==='text'?`<div class="txt" style="font-family:${o.font};color:${o.color};font-size:${o.fs}px">${esc(o.text)}</div>`:o.type==='collage'?`<div class="pet">${art.innerHTML}</div>`:`<div class="die">${art.innerHTML}</div>`,rr.width,rr.height,peelable);
   gh.x=rr.left+rr.width/2;gh.y=rr.top+rr.height/2;gh.pos();
   dd={kind:'item',b,o,gh,x0:e.clientX,y0:e.clientY,lx:e.clientX,ly:e.clientY,carry:false,offX:gh.x-e.clientX,offY:gh.y-e.clientY};
-  b.classList.add('taken');
+  if(o.type==='collage'){gh.g.style.opacity='0';cutAnim(b,()=>{gh.g.style.opacity='';b.classList.add('taken')})}else b.classList.add('taken');
   if(peelable&&!RM){SFX.peel();gh.tweenK((rr.width+rr.height)*.62,170)}
 });
 function targetScale(o,gh){const r=pages.getBoundingClientRect(),k=r.width/SW_;if(o.type==="text")return k;return (o.w*k)/gh.W}
@@ -1252,7 +1407,7 @@ drawer.addEventListener('pointerup',e=>{
   const refill=()=>{b.classList.remove('taken');b.classList.add('refill');setTimeout(()=>b.classList.remove('refill'),500)};
   if(!d.carry){const[fx,fy]=defaultSpot();gh.g.classList.add('carry');gh.tweenK(gh.W+gh.H,240);finishDrop(o,gh,fx,fy);setTimeout(refill,450);return}
   if(inside){const[fx,fy]=frac(e,r);finishDrop(o,gh,fx,fy);setTimeout(refill,450);return}
-  const br=b.querySelector('.dr-stk')?b.querySelector('.dr-stk').getBoundingClientRect():b.getBoundingClientRect();
+  const ra=b.querySelector('.dr-stk')||b.querySelector('.pet-art'),br=(ra||b).getBoundingClientRect();
   gh.g.style.transition='transform .32s cubic-bezier(.3,.7,.2,1)';gh.x=br.left+br.width/2;gh.y=br.top+br.height/2;gh.s=1;gh.rot=0;gh.pos();
   setTimeout(()=>{gh.g.remove();b.classList.remove('taken')},330);
 });
