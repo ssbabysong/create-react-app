@@ -11,6 +11,7 @@ import * as db from './store';
 import { H, type Mine, type Notebook, type Spread, S, keyOf, nextId, savePrefs } from './state';
 import { renderToolbar, setTool, wireToolbar } from './toolbar';
 import { today } from './dates';
+import { exportImage } from './export';
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
 
@@ -19,7 +20,7 @@ document.getElementById('app')!.innerHTML = `
     <div class="tb-l"><button class="ib" type="button" id="shelfBtn" aria-label="书架">${ic('shelf')}</button><button class="ib" type="button" id="drawerBtn" aria-label="贴纸抽屉" aria-pressed="true">${ic('sticker')}</button>
       <div class="crumb"><b id="nbName"></b><span id="crumbDate"></span></div></div>
     <div class="vseg" id="vseg" role="group" aria-label="视图"></div>
-    <div class="tb-r"><button class="ib" type="button" id="todayBtn" aria-label="回到今天"></button><button class="ib" type="button" id="undoBtn" aria-label="撤销"></button><button class="ib" type="button" id="redoBtn" aria-label="重做"></button><button class="ib" type="button" id="moreBtn" data-popbtn="1" aria-label="更多">${ic('more')}</button></div>
+    <div class="tb-r"><button class="ib" type="button" id="todayBtn" aria-label="回到今天"></button><button class="ib" type="button" id="undoBtn" aria-label="撤销"></button><button class="ib" type="button" id="redoBtn" aria-label="重做"></button><button class="ib" type="button" id="exportBtn" data-popbtn="1" aria-label="导出图片">${ic('share')}</button><button class="ib" type="button" id="moreBtn" data-popbtn="1" aria-label="更多">${ic('more')}</button></div>
   </header>
   <div class="mainarea">
     <aside class="drawer" id="drawer" aria-label="贴纸抽屉"></aside>
@@ -68,6 +69,7 @@ $('#moreBtn').addEventListener('click', (e) => {
   popover(
     e.currentTarget as HTMLElement,
     `<button type="button" data-pick="sound"><span class="mini-ic">${S.prefs.sound ? '开' : '关'}</span><span>纸张音效<small>翻页、揭贴纸、撕胶带的声音</small></span></button>
+     <button type="button" data-pick="export"><span class="mini-ic">${ic('image')}</span><span>导出图片<small>存到相册或分享</small></span></button>
      <button type="button" data-pick="eraser"><span class="mini-ic">${ic('eraser')}</span><span>橡皮<small>擦掉用笔写的字</small></span></button>
      <button type="button" data-pick="shelf"><span class="mini-ic">${ic('shelf')}</span><span>书架和设置<small>换本子、新建本子</small></span></button>`,
     (b) => {
@@ -78,10 +80,26 @@ $('#moreBtn').addEventListener('click', (e) => {
         H.toast(S.prefs.sound ? '音效已打开' : '音效已关闭');
       }
       if (b.dataset.pick === 'eraser') setTool('eraser');
+      if (b.dataset.pick === 'export') setTimeout(() => exportMenu($('#moreBtn')), 0);
       if (b.dataset.pick === 'shelf') showShelf();
     },
     'below'
   );
+});
+function exportMenu(anchor: HTMLElement) {
+  const opts = S.single
+    ? [['spread', '整张跨页', '左右两页拼在一起'], [S.page ? 'R' : 'L', '当前这一页', '只导出正在看的这页']]
+    : [['spread', '整张跨页', '左右两页拼在一起'], ['L', '左页', '只导出左边这页'], ['R', '右页', '只导出右边这页']];
+  popover(
+    anchor,
+    `<div class="pt">导出成图片</div>` + opts.map(([k, n, d]) => `<button type="button" data-pick="${k}"><span class="mini-ic">${ic('image')}</span><span>${n}<small>${d}</small></span></button>`).join(''),
+    (b) => exportImage(b.dataset.pick as any),
+    'below'
+  );
+}
+$('#exportBtn').addEventListener('click', (e) => {
+  if (document.querySelector('.pop')) return closePop();
+  exportMenu(e.currentTarget as HTMLElement);
 });
 let rt = 0;
 window.addEventListener('resize', () => {

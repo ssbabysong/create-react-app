@@ -462,6 +462,10 @@ body:not(.drawer-open) .drawer { width: 0; margin-left: 0; opacity: 0; pointer-e
 .btn.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--rule); }
 .btn.danger { color: #b8432f; }
 
+.modal.export { width: 760px; }
+.ex-prev { display: grid; place-items: center; background: var(--rule); border-radius: 14px; padding: 10px; }
+.ex-prev img { max-width: 100%; max-height: 58vh; border-radius: 6px; box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.45); -webkit-touch-callout: default; -webkit-user-select: auto; user-select: auto; }
+
 /* ---------- shelf ---------- */
 .shelf { position: fixed; inset: 0; z-index: 80; background: var(--desk); background-image: var(--desk-pat); background-size: 6px 6px; overflow: auto; padding: calc(16px + env(safe-area-inset-top, 0px)) 16px calc(24px + env(safe-area-inset-bottom, 0px)); -webkit-user-select: none; user-select: none; }
 .shelf-in { max-width: 980px; margin: 0 auto; display: grid; gap: 22px; }
@@ -505,7 +509,7 @@ body.compact .crumb { display: none; }
 body.compact .crumb span { font-size: 13px; }
 body.compact .crumb { margin-left: 2px; }
 body.compact .vseg button { padding: 5px 10px; font-size: 13px; }
-body.compact #todayBtn, body.compact #redoBtn { display: none; }
+body.compact #todayBtn, body.compact #redoBtn, body.compact #exportBtn { display: none; }
 body.compact .ib { width: 36px; height: 36px; }
 body.compact .drawer, body.compact .drawer.wide { position: fixed; left: 0; right: 0; bottom: 0; top: auto; width: auto; height: min(68dvh, 600px); margin: 0; border-radius: 22px 22px 0 0; transform: translateY(105%); opacity: 1; pointer-events: auto; z-index: 50; padding-bottom: env(safe-area-inset-bottom, 0px); background: var(--ui-solid); }
 body.compact.drawer-open .drawer { transform: none; }
