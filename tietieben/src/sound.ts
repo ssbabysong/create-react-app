@@ -1,4 +1,5 @@
 // Paper sounds synthesized with WebAudio, so the app ships no audio files.
+import { haptic } from './native';
 import { S } from './state';
 
 let AC: AudioContext | null = null;
@@ -35,13 +36,7 @@ function burst(a: AudioContext, t: number, d: number, f: number, q: number, g: n
   s.start(t);
   s.stop(t + d + 0.02);
 }
-const buzz = (n: number) => {
-  try {
-    navigator.vibrate && navigator.vibrate(n);
-  } catch {
-    /* not supported */
-  }
-};
+const buzz = (n: number) => haptic(n >= 8 ? 'medium' : 'light');
 
 export const SFX = {
   flip() {
@@ -69,21 +64,22 @@ export const SFX = {
     burst(a, t + 0.52, 0.09, 260, 1, 0.07, 'lowpass');
   },
   peel() {
+    buzz(5);
     const a = actx();
     if (!a) return;
     const t = a.currentTime;
     for (let i = 0; i < 10; i++) burst(a, t + i * 0.013 + Math.random() * 0.006, 0.016, 2600 + Math.random() * 3400, 2.5, 0.035 + Math.random() * 0.035);
-    buzz(5);
   },
   tear() {
+    buzz(8);
     const a = actx();
     if (!a) return;
     const t = a.currentTime;
     burst(a, t, 0.2, 1800, 0.7, 0.035);
     for (let i = 0; i < 18; i++) burst(a, t + i * 0.011 + Math.random() * 0.006, 0.014, 1500 + Math.random() * 4500, 3, 0.05 + Math.random() * 0.04);
-    buzz(8);
   },
   press() {
+    buzz(6);
     const a = actx();
     if (!a) return;
     const t = a.currentTime;
@@ -99,7 +95,6 @@ export const SFX = {
     o.start(t);
     o.stop(t + 0.13);
     burst(a, t, 0.03, 1600, 1, 0.025);
-    buzz(6);
   },
   roll() {
     const a = actx();
@@ -109,6 +104,7 @@ export const SFX = {
     for (let i = 0; i < 7; i++) burst(a, t + 0.05 + i * 0.07, 0.012, 3200, 4, 0.025);
   },
   snip() {
+    buzz(4);
     const a = actx();
     if (!a) return;
     const t = a.currentTime;
@@ -116,7 +112,6 @@ export const SFX = {
     burst(a, t + 0.11, 0.025, 4600, 6, 0.07);
     burst(a, t + 0.2, 0.03, 3800, 5, 0.06);
     burst(a, t + 0.05, 0.12, 900, 1, 0.02, 'lowpass');
-    buzz(4);
   },
   pen() {
     const a = actx();

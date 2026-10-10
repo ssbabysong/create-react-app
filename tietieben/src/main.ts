@@ -12,6 +12,7 @@ import { H, type Mine, type Notebook, type Spread, S, keyOf, nextId, savePrefs }
 import { renderToolbar, setTool, wireToolbar } from './toolbar';
 import { today } from './dates';
 import { exportImage } from './export';
+import { isNative } from './native';
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
 
@@ -166,4 +167,4 @@ async function seedWelcome(nb: Notebook) {
 }
 boot();
 
-if (import.meta.env.PROD && 'serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
+if (import.meta.env.PROD && !isNative && 'serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});

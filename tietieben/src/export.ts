@@ -1,6 +1,7 @@
 // Export a spread or a single page as a PNG: clone the live pages into an SVG foreignObject with the
 // app CSS and only the web-font subsets the page actually uses, rasterise on a canvas, then share or save.
 import { ymd } from './dates';
+import { isNative, shareImage } from './native';
 import { H, PH, PW, S, SPW } from './state';
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
@@ -163,13 +164,13 @@ export async function exportImage(part: 'spread' | 'L' | 'R') {
 function showResult(blob: Blob, name: string) {
   const url = URL.createObjectURL(blob);
   const file = new File([blob], name, { type: 'image/png' });
-  const canShare = !!(navigator.canShare && navigator.canShare({ files: [file] }));
+  const canShare = isNative || !!(navigator.canShare && navigator.canShare({ files: [file] }));
   const ov = document.createElement('div');
   ov.className = 'ovl';
   ov.innerHTML = `<div class="modal export" role="dialog" aria-label="导出图片">
     <div class="mhead"><b>图片做好了</b><span>${canShare ? '点「分享」可以存到相册或发给朋友。' : '点「下载」保存图片。'}在手机上也可以长按图片保存。</span></div>
     <div class="ex-prev"><img src="${url}" alt="导出的手帐页面"></div>
-    <div class="macts"><button class="btn ghost" type="button" data-x="close">关闭</button>${canShare ? '<button class="btn ghost" type="button" data-x="dl">下载</button><button class="btn" type="button" data-x="share">分享</button>' : '<button class="btn" type="button" data-x="dl">下载</button>'}</div></div>`;
+    <div class="macts"><button class="btn ghost" type="button" data-x="close">关闭</button>${canShare ? `${isNative ? '' : '<button class="btn ghost" type="button" data-x="dl">下载</button>'}<button class="btn" type="button" data-x="share">分享</button>` : '<button class="btn" type="button" data-x="dl">下载</button>'}</div></div>`;
   document.body.appendChild(ov);
   const close = () => {
     ov.remove();
@@ -182,7 +183,8 @@ function showResult(blob: Blob, name: string) {
     if (b.dataset.x === 'close') return close();
     if (b.dataset.x === 'share') {
       try {
-        await navigator.share({ files: [file], title: '贴贴本' });
+        if (isNative) await shareImage(blob, name);
+        else await navigator.share({ files: [file], title: '贴贴本' });
       } catch {
         /* user cancelled */
       }

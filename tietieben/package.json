@@ -6,12 +6,21 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:app": "tsc --noEmit && vite build --outDir dist",
+    "ios": "npm run build:app && cap sync ios && cap open ios",
+    "ios:sync": "npm run build:app && cap sync ios"
   },
   "dependencies": {
+    "@capacitor/core": "7.6.9",
+    "@capacitor/filesystem": "7.1.9",
+    "@capacitor/haptics": "7.0.5",
+    "@capacitor/ios": "7.6.9",
+    "@capacitor/share": "7.0.4",
     "perfect-freehand": "1.2.2"
   },
   "devDependencies": {
+    "@capacitor/cli": "7.6.9",
     "typescript": "5.6.3",
     "vite": "6.0.7"
   }
